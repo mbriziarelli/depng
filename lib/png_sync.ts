@@ -1,5 +1,5 @@
-import parse from "./parser-sync.ts";
-import pack from "./packer-sync.ts";
+import parse from "./parser_sync.ts";
+import pack from "./packer_sync.ts";
 
 export function read(buffer, options) {
   return parse(buffer, options || {});

@@ -1,32 +1,53 @@
 import Stream from "stream";
-import Parser from "./parser-async.ts";
-import Packer from "./packer-async.ts";
-import * as PNGSync from "./png-sync.ts";
+import Parser from "./lib/parser_async.ts";
+import Packer from "./lib/packer_async.ts";
+import * as PNGSync from "./lib/png_sync.ts";
 
 export interface PNGOptions {
+  // use this with height if you want to create png from scratch (default: 0)
   width?: number;
+  // use this with width if you want to create png from scratch (default: 0)
   height?: number;
-  fill?: boolean;
+  // whether parser should be strict about checksums in source stream (default: true)
+  checkCRC?: boolean;
+  // chunk size used for deflating data chunks, this should be power of 2 and must not be less than 256 and more than 32*1024 (default: 32 kB)
+  deflateChunkSize?: number;
+  // compression level for deflate (default: 9)
+  deflateLevel?: number;
+  // compression strategy for deflate (default: 3)
+  deflateStrategy: number;
+  // deflate stream factory (default: zlib.createDeflate)
+  deflateFactory?: any;
+  // png filtering method for scanlines (default: -1 => auto, accepts array of numbers 0-4)
+  filterType?: any;
+  // the output colorType - see constants. 0 = grayscale, no alpha, 2 = color, no alpha, 4 = grayscale & alpha, 6 = color & alpha. Default currently 6, but in the future may calculate best mode.
+  colorType?: any;
+  // the input colorType - see constants. Default is 6 (RGBA)
+  inputColorType?: number;
+  // the bitDepth of the output, 8 or 16 bits. Input data is expected to have this bit depth. 16 bit data is expected in the system endianness (Default: 8)
+  bitDepth?: 8 | 16;
+  // whether the input bitmap has 4 bytes per pixel (rgb and alpha) or 3 (rgb - no alpha).
+  inputHasAlpha?: boolean;
+  // an object containing red, green, and blue values between 0 and 255 that is used when packing a PNG if alpha is not to be included (default: 255,255,255)
+  bgColor?: any;
 }
 
 export class PNG extends Stream {
   public width: number;
   public height: number;
-  public data: any;
+  public data: Uint8Array | null;
   public gamma: number;
   public readable: boolean;
   public writable: boolean;
   private _parser: Parser;
   private _packer: Packer;
 
-  constructor(options: PNGOptions) {
+  public constructor(options: PNGOptions) {
     super();
 
-    options = options || {};
-
     // coerce pixel dimensions to integers (also coerces undefined -> 0):
-    this.width = options.width ?? 0;
-    this.height = options.height ?? 0;
+    this.width = (options.width ?? 0) | 0;
+    this.height = (options.height ?? 0) | 0;
 
     this.data = this.width > 0 && this.height > 0
       ? new Uint8Array(4 * this.width * this.height)
@@ -37,7 +58,8 @@ export class PNG extends Stream {
     }
 
     this.gamma = 0;
-    this.readable = this.writable = true;
+    this.readable = true;
+    this.writable = true;
 
     this._parser = new Parser(options);
 
@@ -47,7 +69,7 @@ export class PNG extends Stream {
     this._parser.on("gamma", this._gamma.bind(this));
     this._parser.on(
       "parsed",
-      (data) => {
+      (data: Uint8Array) => {
         this.data = data;
         this.emit("parsed", data);
       },
@@ -62,7 +84,7 @@ export class PNG extends Stream {
 
   static sync = PNGSync;
 
-  pack() {
+  public pack() {
     if (!this.data || !this.data.length) {
       this.emit("error", "No data provided");
       return this;
@@ -77,7 +99,7 @@ export class PNG extends Stream {
     return this;
   }
 
-  parse(data, callback) {
+  public parse(data, callback) {
     if (callback) {
       const onParsed = (parsedData) => {
         this.removeListener("error", onError);
@@ -100,33 +122,33 @@ export class PNG extends Stream {
     return this;
   }
 
-  write(data) {
+  public write(data) {
     this._parser.write(data);
     return true;
   }
 
-  end(data) {
+  public end(data) {
     this._parser.end(data);
   }
 
-  _metadata(metadata) {
+  private _metadata(metadata) {
     this.width = metadata.width;
     this.height = metadata.height;
 
     this.emit("metadata", metadata);
   }
 
-  _gamma(gamma) {
+  private _gamma(gamma) {
     this.gamma = gamma;
   }
 
-  _handleClose() {
+  private _handleClose() {
     if (!this._parser.writable && !this._packer.readable) {
       this.emit("close");
     }
   }
 
-  static bitblt(
+  public static bitblt(
     src: PNG,
     dst: PNG,
     srcX: number,
@@ -172,7 +194,7 @@ export class PNG extends Stream {
     }
   }
 
-  bitblt(
+  public bitblt(
     dst: PNG,
     srcX: number,
     srcY: number,
@@ -185,7 +207,7 @@ export class PNG extends Stream {
     return this;
   }
 
-  static adjustGamma(src: PNG) {
+  public static adjustGamma(src: PNG) {
     if (src.gamma) {
       for (let y = 0; y < src.height; y++) {
         for (let x = 0; x < src.width; x++) {
@@ -202,7 +224,7 @@ export class PNG extends Stream {
     }
   }
 
-  adjustGamma() {
+  public adjustGamma() {
     PNG.adjustGamma(this);
   }
 }

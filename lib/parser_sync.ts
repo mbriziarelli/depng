@@ -1,9 +1,9 @@
-import inflateSync from "./sync-inflate.ts";
-import SyncReader from "./sync-reader.ts";
-import * as FilterSync from "./filter-parse-sync.ts";
+import inflateSync from "./sync_inflate.ts";
+import SyncReader from "./sync_reader.ts";
+import * as FilterSync from "./filter_parse_sync.ts";
 import Parser from "./parser.ts";
 import * as bitmapper from "./bitmapper.ts";
-import formatNormaliser from "./format-normaliser.ts";
+import formatNormaliser from "./format_normaliser.ts";
 
 let hasSyncZlib = true;
 import zlib from "zlib";

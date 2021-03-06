@@ -1,5 +1,5 @@
 import ChunkStream from "./chunkstream.ts";
-import Filter from "./filter-parse.ts";
+import Filter from "./filter_parse.ts";
 
 export class FilterAsync extends ChunkStream {
   private _filter: Filter;

@@ -1,5 +1,5 @@
 import * as interlaceUtils from "./interlace.ts";
-import paethPredictor from "./paeth-predictor.ts";
+import paethPredictor from "./paeth_predictor.ts";
 
 function getByteWidth(width: number, bpp: number, depth: number) {
   const byteWidth = width * bpp;

@@ -1,4 +1,4 @@
-import paethPredictor from "./paeth-predictor.ts";
+import paethPredictor from "./paeth_predictor.ts";
 
 function filterNone(
   pxData,

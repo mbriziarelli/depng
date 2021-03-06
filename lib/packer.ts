@@ -1,7 +1,7 @@
 import constants from "./constants.ts";
 import CrcStream from "./crc.ts";
 import bitPacker from "./bitpacker.ts";
-import filter from "./filter-pack.ts";
+import filter from "./filter_pack.ts";
 import zlib from "zlib";
 
 export class Packer {

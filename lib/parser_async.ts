@@ -1,9 +1,9 @@
 import zlib from "zlib";
 import ChunkStream from "./chunkstream.ts";
-import FilterAsync from "./filter-parse-async.ts";
+import FilterAsync from "./filter_parse_async.ts";
 import Parser from "./parser.ts";
 import * as bitmapper from "./bitmapper.ts";
-import formatNormaliser from "./format-normaliser.ts";
+import formatNormaliser from "./format_normaliser.ts";
 
 export class ParserAsync extends ChunkStream {
   constructor(options) {
