@@ -1,6 +1,4 @@
-"use strict";
-
-let paethPredictor = require("./paeth-predictor");
+import paethPredictor from "./paeth-predictor.ts";
 
 function filterNone(pxData, pxPos, byteWidth, rawData, rawPos) {
   for (let x = 0; x < byteWidth; x++) {
@@ -88,8 +86,9 @@ function filterPaeth(pxData, pxPos, byteWidth, rawData, rawPos, bpp) {
   for (let x = 0; x < byteWidth; x++) {
     let left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
     let up = pxPos > 0 ? pxData[pxPos + x - byteWidth] : 0;
-    let upleft =
-      pxPos > 0 && x >= bpp ? pxData[pxPos + x - (byteWidth + bpp)] : 0;
+    let upleft = pxPos > 0 && x >= bpp
+      ? pxData[pxPos + x - (byteWidth + bpp)]
+      : 0;
     let val = pxData[pxPos + x] - paethPredictor(left, up, upleft);
 
     rawData[rawPos + x] = val;
@@ -101,8 +100,9 @@ function filterSumPaeth(pxData, pxPos, byteWidth, bpp) {
   for (let x = 0; x < byteWidth; x++) {
     let left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
     let up = pxPos > 0 ? pxData[pxPos + x - byteWidth] : 0;
-    let upleft =
-      pxPos > 0 && x >= bpp ? pxData[pxPos + x - (byteWidth + bpp)] : 0;
+    let upleft = pxPos > 0 && x >= bpp
+      ? pxData[pxPos + x - (byteWidth + bpp)]
+      : 0;
     let val = pxData[pxPos + x] - paethPredictor(left, up, upleft);
 
     sum += Math.abs(val);
@@ -127,7 +127,7 @@ let filterSums = {
   4: filterSumPaeth,
 };
 
-module.exports = function (pxData, width, height, options, bpp) {
+export default function (pxData, width, height, options, bpp) {
   let filterTypes;
   if (!("filterType" in options) || options.filterType === -1) {
     filterTypes = [0, 1, 2, 3, 4];
@@ -168,4 +168,4 @@ module.exports = function (pxData, width, height, options, bpp) {
     pxPos += byteWidth;
   }
   return rawData;
-};
+}

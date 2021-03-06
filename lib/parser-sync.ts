@@ -1,21 +1,20 @@
-"use strict";
+import inflateSync from "./sync-inflate.ts";
+import SyncReader from "./sync-reader.ts";
+import FilterSync from "./filter-parse-sync.ts";
+import Parser from "./parser.ts";
+import bitmapper from "./bitmapper.ts";
+import formatNormaliser from "./format-normaliser.ts";
 
 let hasSyncZlib = true;
-let zlib = require("zlib");
-let inflateSync = require("./sync-inflate");
+import zlib from "zlib";
 if (!zlib.deflateSync) {
   hasSyncZlib = false;
 }
-let SyncReader = require("./sync-reader");
-let FilterSync = require("./filter-parse-sync");
-let Parser = require("./parser");
-let bitmapper = require("./bitmapper");
-let formatNormaliser = require("./format-normaliser");
 
-module.exports = function (buffer, options) {
+export default function (buffer, options) {
   if (!hasSyncZlib) {
     throw new Error(
-      "To use the sync capability of this library in old node versions, please pin pngjs to v2.3.0"
+      "To use the sync capability of this library in old node versions, please pin pngjs to v2.3.0",
     );
   }
 
@@ -79,8 +78,8 @@ module.exports = function (buffer, options) {
   if (metaData.interlace) {
     inflatedData = zlib.inflateSync(inflateData);
   } else {
-    let rowSize =
-      ((metaData.width * metaData.bpp * metaData.depth + 7) >> 3) + 1;
+    let rowSize = ((metaData.width * metaData.bpp * metaData.depth + 7) >> 3) +
+      1;
     let imageSize = rowSize * metaData.height;
     inflatedData = inflateSync(inflateData, {
       chunkSize: imageSize,
@@ -102,11 +101,11 @@ module.exports = function (buffer, options) {
   let normalisedBitmapData = formatNormaliser(
     bitmapData,
     metaData,
-    options.skipRescale
+    options.skipRescale,
   );
 
   metaData.data = normalisedBitmapData;
   metaData.gamma = gamma || 0;
 
   return metaData;
-};
+}

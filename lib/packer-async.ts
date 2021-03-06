@@ -1,50 +1,49 @@
-"use strict";
+import util from "util";
+import Stream from "stream";
+import constants from "./constants.ts";
+import Packer from "./packer.ts";
 
-let util = require("util");
-let Stream = require("stream");
-let constants = require("./constants");
-let Packer = require("./packer");
+export default class PackerAsync extends Stream {
+  constructor(opt) {
+    super();
 
-let PackerAsync = (module.exports = function (opt) {
-  Stream.call(this);
+    let options = opt || {};
 
-  let options = opt || {};
+    this._packer = new Packer(options);
+    this._deflate = this._packer.createDeflate();
 
-  this._packer = new Packer(options);
-  this._deflate = this._packer.createDeflate();
-
-  this.readable = true;
-});
-util.inherits(PackerAsync, Stream);
-
-PackerAsync.prototype.pack = function (data, width, height, gamma) {
-  // Signature
-  this.emit("data", Buffer.from(constants.PNG_SIGNATURE));
-  this.emit("data", this._packer.packIHDR(width, height));
-
-  if (gamma) {
-    this.emit("data", this._packer.packGAMA(gamma));
+    this.readable = true;
   }
 
-  let filteredData = this._packer.filterData(data, width, height);
+  pack(data, width, height, gamma) {
+    // Signature
+    this.emit("data", Buffer.from(constants.PNG_SIGNATURE));
+    this.emit("data", this._packer.packIHDR(width, height));
 
-  // compress it
-  this._deflate.on("error", this.emit.bind(this, "error"));
+    if (gamma) {
+      this.emit("data", this._packer.packGAMA(gamma));
+    }
 
-  this._deflate.on(
-    "data",
-    function (compressedData) {
-      this.emit("data", this._packer.packIDAT(compressedData));
-    }.bind(this)
-  );
+    let filteredData = this._packer.filterData(data, width, height);
 
-  this._deflate.on(
-    "end",
-    function () {
-      this.emit("data", this._packer.packIEND());
-      this.emit("end");
-    }.bind(this)
-  );
+    // compress it
+    this._deflate.on("error", this.emit.bind(this, "error"));
 
-  this._deflate.end(filteredData);
-};
+    this._deflate.on(
+      "data",
+      function (compressedData) {
+        this.emit("data", this._packer.packIDAT(compressedData));
+      }.bind(this),
+    );
+
+    this._deflate.on(
+      "end",
+      function () {
+        this.emit("data", this._packer.packIEND());
+        this.emit("end");
+      }.bind(this),
+    );
+
+    this._deflate.end(filteredData);
+  }
+}

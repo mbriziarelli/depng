@@ -1,9 +1,7 @@
-"use strict";
+import SyncReader from "./sync-reader.ts";
+import Filter from "./filter-parse.ts";
 
-let SyncReader = require("./sync-reader");
-let Filter = require("./filter-parse");
-
-exports.process = function (inBuffer, bitmapInfo) {
+export function process(inBuffer, bitmapInfo) {
   let outBuffers = [];
   let reader = new SyncReader(inBuffer);
   let filter = new Filter(bitmapInfo, {
@@ -18,4 +16,4 @@ exports.process = function (inBuffer, bitmapInfo) {
   reader.process();
 
   return Buffer.concat(outBuffers);
-};
+}

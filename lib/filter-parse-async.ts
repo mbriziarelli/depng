@@ -1,24 +1,24 @@
-"use strict";
+import util from "util";
+import ChunkStream from "./chunkstream.ts";
+import Filter from "./filter-parse.ts";
 
-let util = require("util");
-let ChunkStream = require("./chunkstream");
-let Filter = require("./filter-parse");
+export default class FilterAsync extends ChunkStream {
+  constructor() {
+    super();
 
-let FilterAsync = (module.exports = function (bitmapInfo) {
-  ChunkStream.call(this);
+    let buffers = [];
+    let that = this;
 
-  let buffers = [];
-  let that = this;
-  this._filter = new Filter(bitmapInfo, {
-    read: this.read.bind(this),
-    write: function (buffer) {
-      buffers.push(buffer);
-    },
-    complete: function () {
-      that.emit("complete", Buffer.concat(buffers));
-    },
-  });
+    this._filter = new Filter(bitmapInfo, {
+      read: this.read.bind(this),
+      write: function (buffer) {
+        buffers.push(buffer);
+      },
+      complete: function () {
+        that.emit("complete", Buffer.concat(buffers));
+      },
+    });
 
-  this._filter.start();
-});
-util.inherits(FilterAsync, ChunkStream);
+    this._filter.start();
+  }
+}

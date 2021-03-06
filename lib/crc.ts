@@ -1,5 +1,3 @@
-"use strict";
-
 let crcTable = [];
 
 (function () {
@@ -16,25 +14,27 @@ let crcTable = [];
   }
 })();
 
-let CrcCalculator = (module.exports = function () {
-  this._crc = -1;
-});
-
-CrcCalculator.prototype.write = function (data) {
-  for (let i = 0; i < data.length; i++) {
-    this._crc = crcTable[(this._crc ^ data[i]) & 0xff] ^ (this._crc >>> 8);
+export default class CrcCalculator {
+  constructor() {
+    this._crc = -1;
   }
-  return true;
-};
 
-CrcCalculator.prototype.crc32 = function () {
-  return this._crc ^ -1;
-};
-
-CrcCalculator.crc32 = function (buf) {
-  let crc = -1;
-  for (let i = 0; i < buf.length; i++) {
-    crc = crcTable[(crc ^ buf[i]) & 0xff] ^ (crc >>> 8);
+  write(data) {
+    for (let i = 0; i < data.length; i++) {
+      this._crc = crcTable[(this._crc ^ data[i]) & 0xff] ^ (this._crc >>> 8);
+    }
+    return true;
   }
-  return crc ^ -1;
-};
+
+  crc32() {
+    return this._crc ^ -1;
+  }
+
+  static crc32(buf) {
+    let crc = -1;
+    for (let i = 0; i < buf.length; i++) {
+      crc = crcTable[(crc ^ buf[i]) & 0xff] ^ (crc >>> 8);
+    }
+    return crc ^ -1;
+  }
+}

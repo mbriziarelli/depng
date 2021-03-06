@@ -1,21 +1,20 @@
-"use strict";
+import constants from "./constants.ts";
+import Packer from "./packer.ts";
 
 let hasSyncZlib = true;
-let zlib = require("zlib");
+import zlib from "zlib";
 if (!zlib.deflateSync) {
   hasSyncZlib = false;
 }
-let constants = require("./constants");
-let Packer = require("./packer");
 
-module.exports = function (metaData, opt) {
+export default function (metaData, opt) {
   if (!hasSyncZlib) {
     throw new Error(
-      "To use the sync capability of this library in old node versions, please pin pngjs to v2.3.0"
+      "To use the sync capability of this library in old node versions, please pin pngjs to v2.3.0",
     );
   }
 
-  let options = opt || {};
+  import options = opt || {};
 
   let packer = new Packer(options);
 
@@ -34,13 +33,13 @@ module.exports = function (metaData, opt) {
   let filteredData = packer.filterData(
     metaData.data,
     metaData.width,
-    metaData.height
+    metaData.height,
   );
 
   // compress it
   let compressedData = zlib.deflateSync(
     filteredData,
-    packer.getDeflateOptions()
+    packer.getDeflateOptions(),
   );
   filteredData = null;
 

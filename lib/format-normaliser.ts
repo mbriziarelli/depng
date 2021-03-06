@@ -1,5 +1,3 @@
-"use strict";
-
 function dePalette(indata, outdata, width, height, palette) {
   let pxPos = 0;
   // use values from palette
@@ -55,7 +53,7 @@ function scaleDepth(indata, outdata, width, height, depth) {
     for (let x = 0; x < width; x++) {
       for (let i = 0; i < 4; i++) {
         outdata[pxPos + i] = Math.floor(
-          (indata[pxPos + i] * maxOutSample) / maxInSample + 0.5
+          (indata[pxPos + i] * maxOutSample) / maxInSample + 0.5,
         );
       }
       pxPos += 4;
@@ -63,7 +61,7 @@ function scaleDepth(indata, outdata, width, height, depth) {
   }
 }
 
-module.exports = function (indata, imageData, skipRescale = false) {
+export default function (indata, imageData, skipRescale = false) {
   let depth = imageData.depth;
   let width = imageData.width;
   let height = imageData.height;
@@ -90,4 +88,4 @@ module.exports = function (indata, imageData, skipRescale = false) {
     }
   }
   return outdata;
-};
+}

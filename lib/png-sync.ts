@@ -1,12 +1,10 @@
-"use strict";
+import parse from "./parser-sync.ts";
+import pack from "./packer-sync.ts";
 
-let parse = require("./parser-sync");
-let pack = require("./packer-sync");
-
-exports.read = function (buffer, options) {
+export function read(buffer, options) {
   return parse(buffer, options || {});
-};
+}
 
-exports.write = function (png, options) {
+export function write(png, options) {
   return pack(png, options);
-};
+}

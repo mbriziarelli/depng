@@ -1,5 +1,3 @@
-"use strict";
-
 // Adam 7
 //   0 1 2 3 4 5 6 7
 // 0 x 6 4 6 x 6 4 6
@@ -49,7 +47,7 @@ let imagePasses = [
   },
 ];
 
-exports.getImagePasses = function (width, height) {
+export function getImagePasses(width, height) {
   let images = [];
   let xLeftOver = width % 8;
   let yLeftOver = height % 8;
@@ -78,18 +76,16 @@ exports.getImagePasses = function (width, height) {
     }
   }
   return images;
-};
+}
 
-exports.getInterlaceIterator = function (width) {
+export function getInterlaceIterator(width) {
   return function (x, y, pass) {
     let outerXLeftOver = x % imagePasses[pass].x.length;
-    let outerX =
-      ((x - outerXLeftOver) / imagePasses[pass].x.length) * 8 +
+    let outerX = ((x - outerXLeftOver) / imagePasses[pass].x.length) * 8 +
       imagePasses[pass].x[outerXLeftOver];
     let outerYLeftOver = y % imagePasses[pass].y.length;
-    let outerY =
-      ((y - outerYLeftOver) / imagePasses[pass].y.length) * 8 +
+    let outerY = ((y - outerYLeftOver) / imagePasses[pass].y.length) * 8 +
       imagePasses[pass].y[outerYLeftOver];
     return outerX * 4 + outerY * width * 4;
   };
-};
+}
