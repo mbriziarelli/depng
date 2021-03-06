@@ -168,7 +168,6 @@ function bitRetriever(data, depth) {
 }
 
 function mapImage8Bit(image, pxData, getPxPos, bpp, data, rawPos) {
-  // eslint-disable-line max-params
   let imageWidth = image.width;
   let imageHeight = image.height;
   let imagePass = image.index;
@@ -176,14 +175,13 @@ function mapImage8Bit(image, pxData, getPxPos, bpp, data, rawPos) {
     for (let x = 0; x < imageWidth; x++) {
       let pxPos = getPxPos(x, y, imagePass);
       pixelBppMapper[bpp](pxData, data, pxPos, rawPos);
-      rawPos += bpp; //eslint-disable-line no-param-reassign
+      rawPos += bpp;
     }
   }
   return rawPos;
 }
 
 function mapImageCustomBit(image, pxData, getPxPos, bpp, bits, maxBit) {
-  // eslint-disable-line max-params
   let imageWidth = image.width;
   let imageHeight = image.height;
   let imagePass = image.index;

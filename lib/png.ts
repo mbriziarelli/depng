@@ -8,7 +8,7 @@ export class PNG extends Stream {
   constructor(options) {
     super();
 
-    options = options || {}; // eslint-disable-line no-param-reassign
+    options = options || {};
 
     // coerce pixel dimensions to integers (also coerces undefined -> 0):
     this.width = options.width | 0;
@@ -115,16 +115,13 @@ export class PNG extends Stream {
   }
 
   static bitblt(src, dst, srcX, srcY, width, height, deltaX, deltaY) {
-    // eslint-disable-line max-params
     // coerce pixel dimensions to integers (also coerces undefined -> 0):
-    /* eslint-disable no-param-reassign */
     srcX |= 0;
     srcY |= 0;
     width |= 0;
     height |= 0;
     deltaX |= 0;
     deltaY |= 0;
-    /* eslint-enable no-param-reassign */
 
     if (
       srcX > src.width ||
@@ -163,8 +160,6 @@ export class PNG extends Stream {
     deltaX,
     deltaY,
   ) {
-    // eslint-disable-line max-params
-
     PNG.bitblt(this, dst, srcX, srcY, width, height, deltaX, deltaY);
     return this;
   }

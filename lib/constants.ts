@@ -5,8 +5,8 @@ export default {
   TYPE_IEND: 0x49454e44,
   TYPE_IDAT: 0x49444154,
   TYPE_PLTE: 0x504c5445,
-  TYPE_tRNS: 0x74524e53, // eslint-disable-line camelcase
-  TYPE_gAMA: 0x67414d41, // eslint-disable-line camelcase
+  TYPE_tRNS: 0x74524e53,
+  TYPE_gAMA: 0x67414d41,
 
   // color-type bits
   COLORTYPE_GRAYSCALE: 0,
