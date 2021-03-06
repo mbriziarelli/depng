@@ -3,6 +3,14 @@ import Parser from "./lib/parser_async.ts";
 import Packer from "./lib/packer_async.ts";
 import * as PNGSync from "./lib/png_sync.ts";
 
+export type BitDepth = 8 | 16;
+
+export interface Color {
+  red?: number;
+  green?: number;
+  blue?: number;
+}
+
 export interface PNGOptions {
   // use this with height if you want to create png from scratch (default: 0)
   width?: number;
@@ -25,11 +33,11 @@ export interface PNGOptions {
   // the input colorType - see constants. Default is 6 (RGBA)
   inputColorType?: number;
   // the bitDepth of the output, 8 or 16 bits. Input data is expected to have this bit depth. 16 bit data is expected in the system endianness (Default: 8)
-  bitDepth?: 8 | 16;
+  bitDepth?: BitDepth;
   // whether the input bitmap has 4 bytes per pixel (rgb and alpha) or 3 (rgb - no alpha).
   inputHasAlpha?: boolean;
   // an object containing red, green, and blue values between 0 and 255 that is used when packing a PNG if alpha is not to be included (default: 255,255,255)
-  bgColor?: any;
+  bgColor?: Color;
 }
 
 export class PNG extends Stream {
