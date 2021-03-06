@@ -86,7 +86,7 @@ export class Packer {
 
   _packChunk(type, data) {
     const len = data ? data.length : 0;
-    const buf = Buffer.alloc(len + 12);
+    const buf = new Uint8Array(len + 12);
 
     buf.writeUInt32BE(len, 0);
     buf.writeUInt32BE(type, 4);
@@ -103,13 +103,13 @@ export class Packer {
   }
 
   packGAMA(gamma) {
-    const buf = Buffer.alloc(4);
+    const buf = new Uint8Array(4);
     buf.writeUInt32BE(Math.floor(gamma * constants.GAMMA_DIVISION), 0);
     return this._packChunk(constants.TYPE_gAMA, buf);
   }
 
   packIHDR(width, height) {
-    const buf = Buffer.alloc(13);
+    const buf = new Uint8Array(13);
     buf.writeUInt32BE(width, 0);
     buf.writeUInt32BE(height, 4);
     buf[8] = this._options.bitDepth; // Bit depth

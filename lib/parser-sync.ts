@@ -45,8 +45,8 @@ export function parseSync(buffer, options) {
     gamma = _gamma_;
   }
 
-  let inflateDataList = [];
-  function handleInflateData(inflatedData) {
+  const inflateDataList: Uint8Array[] = [];
+  function handleInflateData(inflatedData: Uint8Array) {
     inflateDataList.push(inflatedData);
   }
 

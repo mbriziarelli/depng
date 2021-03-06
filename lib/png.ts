@@ -29,7 +29,7 @@ export class PNG extends Stream {
     this.height = options.height ?? 0;
 
     this.data = this.width > 0 && this.height > 0
-      ? Buffer.alloc(4 * this.width * this.height)
+      ? new Uint8Array(4 * this.width * this.height)
       : null;
 
     if (options.fill && this.data) {

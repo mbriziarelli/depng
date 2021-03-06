@@ -2,16 +2,16 @@ import ChunkStream from "./chunkstream.ts";
 import Filter from "./filter-parse.ts";
 
 export class FilterAsync extends ChunkStream {
-  _filter: Filter;
+  private _filter: Filter;
 
   constructor() {
     super();
 
-    const buffers = [];
+    const buffers: Uint8Array[] = [];
 
     this._filter = new Filter(bitmapInfo, {
       read: this.read.bind(this),
-      write: (buffer) => {
+      write: (buffer: Uint8Array) => {
         buffers.push(buffer);
       },
       complete: () => {

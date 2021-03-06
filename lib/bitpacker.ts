@@ -33,7 +33,7 @@ export function packBits(dataIn, width, height, options) {
     maxValue = 65535;
     outBpp *= 2;
   }
-  const outData = Buffer.alloc(width * height * outBpp);
+  const outData = new Uint8Array(width * height * outBpp);
 
   let inIndex = 0;
   let outIndex = 0;

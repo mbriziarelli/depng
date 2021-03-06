@@ -15,10 +15,10 @@ export function packSync(metaData, opt) {
 
   const packer = new Packer(options);
 
-  const chunks = [];
+  const chunks: Uint8Array[] = [];
 
   // Signature
-  chunks.push(Buffer.from(constants.PNG_SIGNATURE));
+  chunks.push(new Uint8Array(constants.PNG_SIGNATURE));
 
   // Header
   chunks.push(packer.packIHDR(metaData.width, metaData.height));

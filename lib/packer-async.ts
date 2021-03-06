@@ -17,7 +17,7 @@ export class PackerAsync extends Stream {
 
   pack(data, width, height, gamma) {
     // Signature
-    this.emit("data", Buffer.from(constants.PNG_SIGNATURE));
+    this.emit("data", new Uint8Array(constants.PNG_SIGNATURE));
     this.emit("data", this._packer.packIHDR(width, height));
 
     if (gamma) {

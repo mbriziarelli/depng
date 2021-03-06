@@ -88,7 +88,7 @@ export function normalizeFormat(indata, imageData, skipRescale = false) {
     if (depth !== 8 && !skipRescale) {
       // if we need to change the buffer size
       if (depth === 16) {
-        outdata = Buffer.alloc(width * height * 4);
+        outdata = new Uint8Array(width * height * 4);
       }
       scaleDepth(indata, outdata, width, height, depth);
     }

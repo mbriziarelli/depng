@@ -29,8 +29,6 @@ export class Inflate extends zlib.Inflate {
       return zlib.Inflate._processChunk.call(this, chunk, flushFlag, asyncCb);
     }
 
-    const self = this;
-
     let availInBefore = chunk && chunk.length;
     let availOutBefore = this._chunkSize - this._offset;
     let leftToInflate = this._maxLength;
@@ -44,17 +42,17 @@ export class Inflate extends zlib.Inflate {
       error = err;
     });
 
-    function handleChunk(availInAfter, availOutAfter) {
-      if (self._hadError) {
+    const handleChunk = (availInAfter, availOutAfter) => {
+      if (this._hadError) {
         return;
       }
 
-      let have = availOutBefore - availOutAfter;
+      const have = availOutBefore - availOutAfter;
       assert(have >= 0, "have should not go down");
 
       if (have > 0) {
-        let out = self._buffer.slice(self._offset, self._offset + have);
-        self._offset += have;
+        let out = this._buffer.slice(this._offset, this._offset + have);
+        this._offset += have;
 
         if (out.length > leftToInflate) {
           out = out.slice(0, leftToInflate);
@@ -69,10 +67,10 @@ export class Inflate extends zlib.Inflate {
         }
       }
 
-      if (availOutAfter === 0 || self._offset >= self._chunkSize) {
-        availOutBefore = self._chunkSize;
-        self._offset = 0;
-        self._buffer = Buffer.allocUnsafe(self._chunkSize);
+      if (availOutAfter === 0 || this._offset >= this._chunkSize) {
+        availOutBefore = this._chunkSize;
+        this._offset = 0;
+        this._buffer = new Uint8Array(this._chunkSize);
       }
 
       if (availOutAfter === 0) {
@@ -83,7 +81,7 @@ export class Inflate extends zlib.Inflate {
       }
 
       return false;
-    }
+    };
 
     assert(this._handle, "zlib binding closed");
     let res;
@@ -114,14 +112,14 @@ export class Inflate extends zlib.Inflate {
       );
     }
 
-    let buf = Buffer.concat(buffers, nread);
+    const buf = Buffer.concat(buffers, nread);
     _close(this);
 
     return buf;
   }
 }
 
-function _close(engine, callback) {
+function _close(engine, callback: () => void) {
   if (callback) {
     process.nextTick(callback);
   }
@@ -137,11 +135,11 @@ function _close(engine, callback) {
 
 // util.inherits(Inflate, zlib.Inflate);
 
-function zlibBufferSync(engine, buffer) {
+function zlibBufferSync(engine, buffer: string | Uint8Array) {
   if (typeof buffer === "string") {
-    buffer = Buffer.from(buffer);
+    buffer = new TextEncoder().encode(buffer);
   }
-  if (!(buffer instanceof Buffer)) {
+  if (!(buffer instanceof Uint8Array)) {
     throw new TypeError("Not a string or buffer");
   }
 
@@ -153,7 +151,7 @@ function zlibBufferSync(engine, buffer) {
   return engine._processChunk(buffer, flushFlag);
 }
 
-export function inflateSync(buffer, opts) {
+export function inflateSync(buffer: string | Uint8Array, opts) {
   return zlibBufferSync(new Inflate(opts), buffer);
 }
 

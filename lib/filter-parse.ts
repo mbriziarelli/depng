@@ -134,7 +134,7 @@ export class Filter {
     if (filter === 0) {
       unfilteredLine = rawData.slice(1, byteWidth + 1);
     } else {
-      unfilteredLine = Buffer.alloc(byteWidth);
+      unfilteredLine = new Uint8Array(byteWidth);
 
       switch (filter) {
         case 1:

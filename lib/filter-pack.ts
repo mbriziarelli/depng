@@ -182,7 +182,7 @@ export function packFilter(
   const byteWidth = width * bpp;
   let rawPos = 0;
   let pxPos = 0;
-  const rawData = Buffer.alloc((byteWidth + 1) * height);
+  const rawData = new Uint8Array((byteWidth + 1) * height);
 
   let sel = filterTypes[0];
 

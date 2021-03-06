@@ -1,11 +1,12 @@
 import Stream from "stream";
 
 export class ChunkStream extends Stream {
-  private _buffers: any[] | null;
+  private _buffers: (Uint8Array | null)[] | null;
   private _buffered: number;
   private _reads: any[] | null;
   private _paused: boolean;
   private _encoding: string;
+  private _writable: boolean;
 
   constructor() {
     super();
@@ -17,10 +18,10 @@ export class ChunkStream extends Stream {
     this._paused = false;
 
     this._encoding = "utf8";
-    this.writable = true;
+    this._writable = true;
   }
 
-  read(length, callback) {
+  read(length: number, callback) {
     this._reads.push({
       length: Math.abs(length), // if length < 0 then at most this length
       allowLess: length < 0,
@@ -42,13 +43,13 @@ export class ChunkStream extends Stream {
   }
 
   write(data, encoding) {
-    if (!this.writable) {
+    if (!this._writable) {
       this.emit("error", new Error("Stream not writable"));
       return false;
     }
 
     let dataBuffer;
-    if (Buffer.isBuffer(data)) {
+    if (data instanceof Uint8Array) {
       dataBuffer = data;
     } else {
       dataBuffer = Buffer.from(data, encoding || this._encoding);
@@ -64,7 +65,7 @@ export class ChunkStream extends Stream {
       this._paused = true;
     }
 
-    return this.writable && !this._paused;
+    return this._writable && !this._paused;
   }
 
   end(data, encoding) {
@@ -72,7 +73,7 @@ export class ChunkStream extends Stream {
       this.write(data, encoding);
     }
 
-    this.writable = false;
+    this._writable = false;
 
     // already destroyed
     if (!this._buffers) {
@@ -91,7 +92,7 @@ export class ChunkStream extends Stream {
     return this.end(data, encoding);
   }
 
-  _end() {
+  private _end() {
     if (this._reads.length > 0) {
       this.emit("error", new Error("Unexpected end of input"));
     }
@@ -104,14 +105,14 @@ export class ChunkStream extends Stream {
       return;
     }
 
-    this.writable = false;
+    this._writable = false;
     this._reads = null;
     this._buffers = null;
 
     this.emit("close");
   }
 
-  _processReadAllowingLess(read) {
+  private _processReadAllowingLess(read) {
     // ok there is any data so that we can satisfy this request
     this._reads.shift(); // == read
 
@@ -133,12 +134,12 @@ export class ChunkStream extends Stream {
     }
   }
 
-  _processRead(read) {
+  private _processRead(read) {
     this._reads.shift(); // == read
 
     let pos = 0;
     let count = 0;
-    const data = Buffer.alloc(read.length);
+    const data = new Uint8Array(read.length);
 
     // create buffer for all data
     while (pos < read.length) {
@@ -164,7 +165,7 @@ export class ChunkStream extends Stream {
     read.func.call(this, data);
   }
 
-  _process() {
+  private _process() {
     try {
       // as long as there is any data and read requests
       while (this._buffered > 0 && this._reads && this._reads.length > 0) {
@@ -184,7 +185,7 @@ export class ChunkStream extends Stream {
         }
       }
 
-      if (this._buffers && !this.writable) {
+      if (this._buffers && !this._writable) {
         this._end();
       }
     } catch (ex) {

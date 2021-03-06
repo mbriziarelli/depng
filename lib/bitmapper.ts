@@ -1,4 +1,4 @@
-import * as interlaceUtils from "./interlace.ts";
+import { getImagePasses, getInterlaceIterator } from "./interlace.ts";
 
 const pixelBppMapper = [
   // 0 - dummy entry
@@ -211,7 +211,7 @@ export function dataToBitMap(data, bitmapInfo) {
   }
   let pxData;
   if (depth <= 8) {
-    pxData = Buffer.alloc(width * height * 4);
+    pxData = new Uint8Array(width * height * 4);
   } else {
     pxData = new Uint16Array(width * height * 4);
   }
@@ -221,8 +221,8 @@ export function dataToBitMap(data, bitmapInfo) {
   let getPxPos;
 
   if (interlace) {
-    images = interlaceUtils.getImagePasses(width, height);
-    getPxPos = interlaceUtils.getInterlaceIterator(width);
+    images = getImagePasses(width, height);
+    getPxPos = getInterlaceIterator(width);
   } else {
     let nonInterlacedPxPos = 0;
     getPxPos = function () {
