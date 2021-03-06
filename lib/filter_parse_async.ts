@@ -1,5 +1,5 @@
-import ChunkStream from "./chunkstream.ts";
-import Filter from "./filter_parse.ts";
+import { ChunkStream } from "./chunkstream.ts";
+import { Filter } from "./filter_parse.ts";
 
 export class FilterAsync extends ChunkStream {
   private _filter: Filter;
@@ -22,5 +22,3 @@ export class FilterAsync extends ChunkStream {
     this._filter.start();
   }
 }
-
-export default FilterAsync;

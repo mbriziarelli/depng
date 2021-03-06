@@ -1,10 +1,10 @@
 export class SyncReader {
-  constructor(buffer) {
+  public constructor(buffer) {
     this._buffer = buffer;
     this._reads = [];
   }
 
-  read(length: number, callback) {
+  public read(length: number, callback) {
     this._reads.push({
       length: Math.abs(length), // if length < 0 then at most this length
       allowLess: length < 0,
@@ -12,7 +12,7 @@ export class SyncReader {
     });
   }
 
-  process() {
+  public process() {
     // as long as there is any data and read requests
     while (this._reads.length > 0 && this._buffer.length) {
       const read = this._reads[0];
@@ -43,5 +43,3 @@ export class SyncReader {
     }
   }
 }
-
-export default SyncReader;

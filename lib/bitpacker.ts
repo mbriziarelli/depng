@@ -1,4 +1,4 @@
-import constants from "./constants.ts";
+import { constants } from "./constants.ts";
 
 export function packBits(dataIn, width, height, options) {
   const outHasAlpha =
@@ -156,5 +156,3 @@ export function packBits(dataIn, width, height, options) {
 
   return outData;
 }
-
-export default packBits;

@@ -1,5 +1,5 @@
-import * as interlaceUtils from "./interlace.ts";
-import paethPredictor from "./paeth_predictor.ts";
+import { getImagePasses } from "./interlace.ts";
+import { predictPaeth } from "./paeth_predictor.ts";
 
 function getByteWidth(width: number, bpp: number, depth: number) {
   const byteWidth = width * bpp;
@@ -21,7 +21,7 @@ export class Filter {
     this._imageIndex = 0;
     this._images = [];
     if (interlace) {
-      const passes = interlaceUtils.getImagePasses(width, height);
+      const passes = getImagePasses(width, height);
       for (let i = 0; i < passes.length; i++) {
         this._images.push({
           byteWidth: getByteWidth(passes[i].width, bpp, depth),
@@ -120,7 +120,7 @@ export class Filter {
       const f4UpLeft = x > xBiggerThan && lastLine
         ? lastLine[x - xComparison]
         : 0;
-      const f4Add = paethPredictor(f4Left, f4Up, f4UpLeft);
+      const f4Add = predictPaeth(f4Left, f4Up, f4UpLeft);
       unfilteredLine[x] = rawByte + f4Add;
     }
   }
@@ -174,5 +174,3 @@ export class Filter {
     }
   }
 }
-
-export default Filter;

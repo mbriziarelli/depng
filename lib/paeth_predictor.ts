@@ -1,4 +1,4 @@
-export function paethPredictor(
+export function predictPaeth(
   left: number,
   above: number,
   upLeft: number,
@@ -16,5 +16,3 @@ export function paethPredictor(
   }
   return upLeft;
 }
-
-export default paethPredictor;

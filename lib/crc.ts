@@ -38,5 +38,3 @@ export class CrcCalculator {
     return crc ^ -1;
   }
 }
-
-export default CrcCalculator;

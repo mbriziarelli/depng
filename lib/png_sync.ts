@@ -1,10 +1,10 @@
-import parse from "./parser_sync.ts";
-import pack from "./packer_sync.ts";
+import { parseSync } from "./parser_sync.ts";
+import { packSync } from "./packer_sync.ts";
 
 export function read(buffer, options) {
-  return parse(buffer, options || {});
+  return parseSync(buffer, options || {});
 }
 
 export function write(png, options) {
-  return pack(png, options);
+  return packSync(png, options);
 }

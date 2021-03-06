@@ -95,5 +95,3 @@ export function normalizeFormat(indata, imageData, skipRescale = false) {
   }
   return outdata;
 }
-
-export default normalizeFormat;

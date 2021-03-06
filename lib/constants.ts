@@ -28,5 +28,3 @@ export const constants = {
 
   GAMMA_DIVISION: 100000,
 };
-
-export default constants;

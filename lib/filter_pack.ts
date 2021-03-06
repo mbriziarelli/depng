@@ -1,4 +1,4 @@
-import paethPredictor from "./paeth_predictor.ts";
+import { predictPaeth } from "./paeth_predictor.ts";
 
 function filterNone(
   pxData,
@@ -122,7 +122,7 @@ function filterPaeth(
     const upleft = pxPos > 0 && x >= bpp
       ? pxData[pxPos + x - (byteWidth + bpp)]
       : 0;
-    const val = pxData[pxPos + x] - paethPredictor(left, up, upleft);
+    const val = pxData[pxPos + x] - predictPaeth(left, up, upleft);
 
     rawData[rawPos + x] = val;
   }
@@ -136,7 +136,7 @@ function filterSumPaeth(pxData, pxPos: number, byteWidth: number, bpp: number) {
     const upleft = pxPos > 0 && x >= bpp
       ? pxData[pxPos + x - (byteWidth + bpp)]
       : 0;
-    const val = pxData[pxPos + x] - paethPredictor(left, up, upleft);
+    const val = pxData[pxPos + x] - predictPaeth(left, up, upleft);
 
     sum += Math.abs(val);
   }
@@ -209,5 +209,3 @@ export function packFilter(
 
   return rawData;
 }
-
-export default packFilter;

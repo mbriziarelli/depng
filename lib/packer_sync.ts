@@ -1,6 +1,6 @@
-import constants from "./constants.ts";
-import Packer from "./packer.ts";
 import zlib from "zlib";
+import { constants } from "./constants.ts";
+import { Packer } from "./packer.ts";
 
 const hasSyncZlib = !!zlib.deflateSync;
 
@@ -50,5 +50,3 @@ export function packSync(metaData, opt) {
 
   return Buffer.concat(chunks);
 }
-
-export default packSync;

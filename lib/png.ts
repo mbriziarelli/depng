@@ -1,7 +1,7 @@
 import Stream from "stream";
-import Parser from "./lib/parser_async.ts";
-import Packer from "./lib/packer_async.ts";
-import * as PNGSync from "./lib/png_sync.ts";
+import { ParserAsync as Parser } from "./parser_async.ts";
+import { PackerAsync as Packer } from "./packer_async.ts";
+import * as PNGSync from "./png_sync.ts";
 
 export type BitDepth = 8 | 16;
 

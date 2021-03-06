@@ -1,6 +1,5 @@
 import { ok as assert } from "assert";
 import zlib from "zlib";
-
 import { kMaxLength } from "buffer";
 
 export class Inflate extends zlib.Inflate {
@@ -158,5 +157,3 @@ export function inflateSync(buffer: string | Uint8Array, opts) {
 export function createInflate(opts) {
   return new Inflate(opts);
 }
-
-export default inflateSync;

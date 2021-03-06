@@ -1,7 +1,6 @@
-import util from "util";
 import Stream from "stream";
-import constants from "./constants.ts";
-import Packer from "./packer.ts";
+import { constants } from "./constants.ts";
+import { Packer } from "./packer.ts";
 
 export class PackerAsync extends Stream {
   constructor(opt) {
@@ -47,5 +46,3 @@ export class PackerAsync extends Stream {
     this._deflate.end(filteredData);
   }
 }
-
-export default PackerAsync;

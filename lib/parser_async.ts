@@ -1,9 +1,9 @@
 import zlib from "zlib";
-import ChunkStream from "./chunkstream.ts";
-import FilterAsync from "./filter_parse_async.ts";
-import Parser from "./parser.ts";
-import * as bitmapper from "./bitmapper.ts";
-import formatNormaliser from "./format_normaliser.ts";
+import { ChunkStream } from "./chunkstream.ts";
+import { FilterAsync } from "./filter_parse_async.ts";
+import { Parser } from "./parser.ts";
+import { dataToBitMap } from "./bitmapper.ts";
+import { normalizeFormat } from "./format_normaliser.ts";
 
 export class ParserAsync extends ChunkStream {
   constructor(options) {
@@ -148,9 +148,9 @@ export class ParserAsync extends ChunkStream {
     let normalisedBitmapData;
 
     try {
-      let bitmapData = bitmapper.dataToBitMap(filteredData, this._bitmapInfo);
+      let bitmapData = dataToBitMap(filteredData, this._bitmapInfo);
 
-      normalisedBitmapData = formatNormaliser(
+      normalisedBitmapData = normalizeFormat(
         bitmapData,
         this._bitmapInfo,
         this._options.skipRescale,
@@ -164,5 +164,3 @@ export class ParserAsync extends ChunkStream {
     this.emit("parsed", normalisedBitmapData);
   }
 }
-
-export default ParserAsync;

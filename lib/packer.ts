@@ -1,8 +1,8 @@
-import constants from "./constants.ts";
-import CrcStream from "./crc.ts";
-import bitPacker from "./bitpacker.ts";
-import filter from "./filter_pack.ts";
 import zlib from "zlib";
+import { constants } from "./constants.ts";
+import { CrcCalculator } from "./crc.ts";
+import { packBits } from "./bitpacker.ts";
+import { packFilter } from "./filter_pack.ts";
 
 export class Packer {
   constructor(options) {
@@ -76,11 +76,17 @@ export class Packer {
 
   filterData(data, width, height) {
     // convert to correct format for filtering (e.g. right bpp and bit depth)
-    const packedData = bitPacker(data, width, height, this._options);
+    const packedData = packBits(data, width, height, this._options);
 
     // filter pixel data
     const bpp = constants.COLORTYPE_TO_BPP_MAP[this._options.colorType];
-    const filteredData = filter(packedData, width, height, this._options, bpp);
+    const filteredData = packFilter(
+      packedData,
+      width,
+      height,
+      this._options,
+      bpp,
+    );
     return filteredData;
   }
 
@@ -96,7 +102,7 @@ export class Packer {
     }
 
     buf.writeInt32BE(
-      CrcStream.crc32(buf.slice(4, buf.length - 4)),
+      CrcCalculator.crc32(buf.slice(4, buf.length - 4)),
       buf.length - 4,
     );
     return buf;
@@ -129,5 +135,3 @@ export class Packer {
     return this._packChunk(constants.TYPE_IEND, null);
   }
 }
-
-export default Packer;

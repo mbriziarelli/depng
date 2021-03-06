@@ -193,5 +193,3 @@ export class ChunkStream extends Stream {
     }
   }
 }
-
-export default ChunkStream;

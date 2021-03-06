@@ -1,5 +1,5 @@
-import SyncReader from "./sync_reader.ts";
-import Filter from "./filter_parse.ts";
+import { SyncReader } from "./sync_reader.ts";
+import { Filter } from "./filter_parse.ts";
 
 export function process(inBuffer: Uint8Array, bitmapInfo) {
   const outBuffers: Uint8Array[] = [];

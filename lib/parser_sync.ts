@@ -1,9 +1,9 @@
-import inflateSync from "./sync_inflate.ts";
-import SyncReader from "./sync_reader.ts";
-import * as FilterSync from "./filter_parse_sync.ts";
-import Parser from "./parser.ts";
-import * as bitmapper from "./bitmapper.ts";
-import formatNormaliser from "./format_normaliser.ts";
+import { inflateSync } from "./sync_inflate.ts";
+import { SyncReader } from "./sync_reader.ts";
+import { process } from "./filter_parse_sync.ts";
+import { Parser } from "./parser.ts";
+import { dataToBitMap } from "./bitmapper.ts";
+import { normalizeFormat } from "./format_normaliser.ts";
 
 let hasSyncZlib = true;
 import zlib from "zlib";
@@ -93,13 +93,13 @@ export function parseSync(buffer, options) {
     throw new Error("bad png - invalid inflate data response");
   }
 
-  let unfilteredData = FilterSync.process(inflatedData, metaData);
+  let unfilteredData = process(inflatedData, metaData);
   inflateData = null;
 
-  const bitmapData = bitmapper.dataToBitMap(unfilteredData, metaData);
+  const bitmapData = dataToBitMap(unfilteredData, metaData);
   unfilteredData = null;
 
-  const normalisedBitmapData = formatNormaliser(
+  const normalisedBitmapData = normalizeFormat(
     bitmapData,
     metaData,
     options.skipRescale,
@@ -110,5 +110,3 @@ export function parseSync(buffer, options) {
 
   return metaData;
 }
-
-export default parseSync;
