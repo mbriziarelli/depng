@@ -1,14 +1,14 @@
-let PNG = require("../lib/png").PNG;
-let fs = require("fs");
+import fs from "fs";
+import { PNG } from "../lib/png.ts";
 
-let newfile = new PNG({ width: 10, height: 10 });
+const newfile = new PNG({ width: 10, height: 10 });
 
 for (let y = 0; y < newfile.height; y++) {
   for (let x = 0; x < newfile.width; x++) {
-    let idx = (newfile.width * y + x) << 2;
-
-    let col =
-      (x < newfile.width >> 1) ^ (y < newfile.height >> 1) ? 0xe5 : 0xff;
+    const idx = (newfile.width * y + x) << 2;
+    const col = (x < newfile.width >> 1) ^ (y < newfile.height >> 1)
+      ? 0xe5
+      : 0xff;
 
     newfile.data[idx] = col;
     newfile.data[idx + 1] = col;

@@ -1,8 +1,7 @@
-import util from "util";
 import Stream from "stream";
 import Parser from "./parser-async.ts";
 import Packer from "./packer-async.ts";
-import PNGSync from "./png-sync.ts";
+import * as PNGSync from "./png-sync.ts";
 
 export class PNG extends Stream {
   constructor(options) {

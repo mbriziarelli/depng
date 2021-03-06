@@ -2,9 +2,9 @@ import SyncReader from "./sync-reader.ts";
 import Filter from "./filter-parse.ts";
 
 export function process(inBuffer, bitmapInfo) {
-  let outBuffers = [];
-  let reader = new SyncReader(inBuffer);
-  let filter = new Filter(bitmapInfo, {
+  const outBuffers = [];
+  const reader = new SyncReader(inBuffer);
+  const filter = new Filter(bitmapInfo, {
     read: reader.read.bind(reader),
     write: function (bufferPart) {
       outBuffers.push(bufferPart);

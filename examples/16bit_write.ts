@@ -1,9 +1,7 @@
-#!/usr/bin/env node
-
-let fs = require("fs");
-let PNG = require("../lib/png").PNG;
-let w = 32;
-let h = 64;
+import fs from "fs";
+import { PNG } from "../lib/png.ts";
+const w = 32;
+const h = 64;
 
 /// RGBA input (color type 6)
 let buffer = Buffer.alloc(2 * w * h * 4);

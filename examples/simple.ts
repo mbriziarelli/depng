@@ -1,9 +1,7 @@
-#!/usr/bin/env node
+import fs from "fs";
+import { PNG } from "../lib/png.ts";
 
-let fs = require("fs"),
-  PNG = require("../lib/png").PNG;
-
-let png = new PNG({
+const png = new PNG({
     filterType: -1,
   }),
   src = fs.createReadStream(process.argv[2]),
@@ -17,8 +15,9 @@ png.on("parsed", function () {
       if (
         Math.abs(png.data[idx] - png.data[idx + 1]) <= 1 &&
         Math.abs(png.data[idx + 1] - png.data[idx + 2]) <= 1
-      )
+      ) {
         png.data[idx] = png.data[idx + 1] = png.data[idx + 2];
+      }
     }
   }
 

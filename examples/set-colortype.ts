@@ -1,10 +1,10 @@
-let fs = require("fs");
-let PNG = require("../lib/png").PNG;
-let w = 320;
-let h = 200;
+import fs from "fs";
+import { PNG } from "../lib/png.ts";
+const w = 320;
+const h = 200;
 
-let bitmapWithoutAlpha = Buffer.alloc(w * h * 3);
-let ofs = 0;
+const bitmapWithoutAlpha = Buffer.alloc(w * h * 3);
+const ofs = 0;
 for (let i = 0; i < bitmapWithoutAlpha.length; i += 3) {
   bitmapWithoutAlpha[ofs++] = 0xff;
   bitmapWithoutAlpha[ofs++] = i % 0xff;

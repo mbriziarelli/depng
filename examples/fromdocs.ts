@@ -1,5 +1,5 @@
-let fs = require("fs"),
-  PNG = require("../lib/png").PNG; // note require('pngjs') outside this project
+import fs from "fs";
+import { PNG } from "../lib/png.ts";
 
 fs.createReadStream("test/in/basi0g01.png")
   .pipe(new PNG({}))

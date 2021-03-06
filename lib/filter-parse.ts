@@ -1,4 +1,4 @@
-import interlaceUtils from "./interlace.ts";
+import * as interlaceUtils from "./interlace.ts";
 import paethPredictor from "./paeth-predictor.ts";
 
 function getByteWidth(width, bpp, depth) {
@@ -11,11 +11,11 @@ function getByteWidth(width, bpp, depth) {
 
 export default class Filter {
   constructor(bitmapInfo, dependencies) {
-    let width = bitmapInfo.width;
-    let height = bitmapInfo.height;
-    let interlace = bitmapInfo.interlace;
-    let bpp = bitmapInfo.bpp;
-    let depth = bitmapInfo.depth;
+    const width = bitmapInfo.width;
+    const height = bitmapInfo.height;
+    const interlace = bitmapInfo.interlace;
+    const bpp = bitmapInfo.bpp;
+    const depth = bitmapInfo.depth;
 
     this.read = dependencies.read;
     this.write = dependencies.write;
@@ -24,7 +24,7 @@ export default class Filter {
     this._imageIndex = 0;
     this._images = [];
     if (interlace) {
-      let passes = interlaceUtils.getImagePasses(width, height);
+      const passes = interlaceUtils.getImagePasses(width, height);
       for (let i = 0; i < passes.length; i++) {
         this._images.push({
           byteWidth: getByteWidth(passes[i].width, bpp, depth),
@@ -65,12 +65,12 @@ export default class Filter {
     unfilteredLine,
     byteWidth,
   ) {
-    let xComparison = this._xComparison;
-    let xBiggerThan = xComparison - 1;
+    const xComparison = this._xComparison;
+    const xBiggerThan = xComparison - 1;
 
     for (let x = 0; x < byteWidth; x++) {
-      let rawByte = rawData[1 + x];
-      let f1Left = x > xBiggerThan ? unfilteredLine[x - xComparison] : 0;
+      const rawByte = rawData[1 + x];
+      const f1Left = x > xBiggerThan ? unfilteredLine[x - xComparison] : 0;
       unfilteredLine[x] = rawByte + f1Left;
     }
   }
@@ -80,7 +80,7 @@ export default class Filter {
     unfilteredLine,
     byteWidth,
   ) {
-    let lastLine = this._lastLine;
+    const lastLine = this._lastLine;
 
     for (let x = 0; x < byteWidth; x++) {
       let rawByte = rawData[1 + x];
@@ -94,15 +94,15 @@ export default class Filter {
     unfilteredLine,
     byteWidth,
   ) {
-    let xComparison = this._xComparison;
-    let xBiggerThan = xComparison - 1;
-    let lastLine = this._lastLine;
+    const xComparison = this._xComparison;
+    const xBiggerThan = xComparison - 1;
+    const lastLine = this._lastLine;
 
     for (let x = 0; x < byteWidth; x++) {
-      let rawByte = rawData[1 + x];
-      let f3Up = lastLine ? lastLine[x] : 0;
-      let f3Left = x > xBiggerThan ? unfilteredLine[x - xComparison] : 0;
-      let f3Add = Math.floor((f3Left + f3Up) / 2);
+      const rawByte = rawData[1 + x];
+      const f3Up = lastLine ? lastLine[x] : 0;
+      const f3Left = x > xBiggerThan ? unfilteredLine[x - xComparison] : 0;
+      const f3Add = Math.floor((f3Left + f3Up) / 2);
       unfilteredLine[x] = rawByte + f3Add;
     }
   }
@@ -112,27 +112,27 @@ export default class Filter {
     unfilteredLine,
     byteWidth,
   ) {
-    let xComparison = this._xComparison;
-    let xBiggerThan = xComparison - 1;
-    let lastLine = this._lastLine;
+    const xComparison = this._xComparison;
+    const xBiggerThan = xComparison - 1;
+    const lastLine = this._lastLine;
 
     for (let x = 0; x < byteWidth; x++) {
-      let rawByte = rawData[1 + x];
-      let f4Up = lastLine ? lastLine[x] : 0;
-      let f4Left = x > xBiggerThan ? unfilteredLine[x - xComparison] : 0;
-      let f4UpLeft = x > xBiggerThan && lastLine
+      const rawByte = rawData[1 + x];
+      const f4Up = lastLine ? lastLine[x] : 0;
+      const f4Left = x > xBiggerThan ? unfilteredLine[x - xComparison] : 0;
+      const f4UpLeft = x > xBiggerThan && lastLine
         ? lastLine[x - xComparison]
         : 0;
-      let f4Add = paethPredictor(f4Left, f4Up, f4UpLeft);
+      const f4Add = paethPredictor(f4Left, f4Up, f4UpLeft);
       unfilteredLine[x] = rawByte + f4Add;
     }
   }
 
   _reverseFilterLine(rawData) {
-    let filter = rawData[0];
+    const filter = rawData[0];
     let unfilteredLine;
     let currentImage = this._images[this._imageIndex];
-    let byteWidth = currentImage.byteWidth;
+    const byteWidth = currentImage.byteWidth;
 
     if (filter === 0) {
       unfilteredLine = rawData.slice(1, byteWidth + 1);

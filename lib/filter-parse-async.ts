@@ -1,21 +1,21 @@
-import util from "util";
 import ChunkStream from "./chunkstream.ts";
 import Filter from "./filter-parse.ts";
 
 export default class FilterAsync extends ChunkStream {
+  _filter: Filter;
+
   constructor() {
     super();
 
-    let buffers = [];
-    let that = this;
+    const buffers = [];
 
     this._filter = new Filter(bitmapInfo, {
       read: this.read.bind(this),
-      write: function (buffer) {
+      write: (buffer) => {
         buffers.push(buffer);
       },
-      complete: function () {
-        that.emit("complete", Buffer.concat(buffers));
+      complete: () => {
+        this.emit("complete", Buffer.concat(buffers));
       },
     });
 

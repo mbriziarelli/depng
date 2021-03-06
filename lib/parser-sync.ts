@@ -1,8 +1,8 @@
 import inflateSync from "./sync-inflate.ts";
 import SyncReader from "./sync-reader.ts";
-import FilterSync from "./filter-parse-sync.ts";
+import * as FilterSync from "./filter-parse-sync.ts";
 import Parser from "./parser.ts";
-import bitmapper from "./bitmapper.ts";
+import * as bitmapper from "./bitmapper.ts";
 import formatNormaliser from "./format-normaliser.ts";
 
 let hasSyncZlib = true;
@@ -50,9 +50,9 @@ export default function (buffer, options) {
     inflateDataList.push(inflatedData);
   }
 
-  let reader = new SyncReader(buffer);
+  const reader = new SyncReader(buffer);
 
-  let parser = new Parser(options, {
+  const parser = new Parser(options, {
     read: reader.read.bind(reader),
     error: handleError,
     metadata: handleMetaData,
@@ -78,9 +78,10 @@ export default function (buffer, options) {
   if (metaData.interlace) {
     inflatedData = zlib.inflateSync(inflateData);
   } else {
-    let rowSize = ((metaData.width * metaData.bpp * metaData.depth + 7) >> 3) +
+    const rowSize =
+      ((metaData.width * metaData.bpp * metaData.depth + 7) >> 3) +
       1;
-    let imageSize = rowSize * metaData.height;
+    const imageSize = rowSize * metaData.height;
     inflatedData = inflateSync(inflateData, {
       chunkSize: imageSize,
       maxLength: imageSize,
@@ -95,10 +96,10 @@ export default function (buffer, options) {
   let unfilteredData = FilterSync.process(inflatedData, metaData);
   inflateData = null;
 
-  let bitmapData = bitmapper.dataToBitMap(unfilteredData, metaData);
+  const bitmapData = bitmapper.dataToBitMap(unfilteredData, metaData);
   unfilteredData = null;
 
-  let normalisedBitmapData = formatNormaliser(
+  const normalisedBitmapData = formatNormaliser(
     bitmapData,
     metaData,
     options.skipRescale,

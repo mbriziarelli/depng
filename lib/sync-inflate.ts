@@ -1,25 +1,24 @@
-import {assert: ok } from "assert";
+import { ok as assert } from "assert";
 import zlib from "zlib";
-import util from "util";
 
-import {kMaxLength} from "buffer";
+import { kMaxLength } from "buffer";
 
-export class Inflate  extends zlib.Inflate{
+export class Inflate extends zlib.Inflate {
   constructor(opts) {
     if (!(this instanceof Inflate)) {
       return new Inflate(opts);
     }
-  
+
     if (opts && opts.chunkSize < zlib.Z_MIN_CHUNK) {
       opts.chunkSize = zlib.Z_MIN_CHUNK;
     }
 
-    super(opts)
-    
+    super(opts);
+
     // Node 8 --> 9 compatibility check
     this._offset = this._offset === undefined ? this._outOffset : this._offset;
     this._buffer = this._buffer || this._outBuffer;
-  
+
     if (opts && opts.maxLength != null) {
       this._maxLength = opts.maxLength;
     }
@@ -29,63 +28,63 @@ export class Inflate  extends zlib.Inflate{
     if (typeof asyncCb === "function") {
       return zlib.Inflate._processChunk.call(this, chunk, flushFlag, asyncCb);
     }
-  
-    let self = this;
-  
+
+    const self = this;
+
     let availInBefore = chunk && chunk.length;
     let availOutBefore = this._chunkSize - this._offset;
     let leftToInflate = this._maxLength;
     let inOff = 0;
-  
+
     let buffers = [];
     let nread = 0;
-  
+
     let error;
     this.on("error", function (err) {
       error = err;
     });
-  
+
     function handleChunk(availInAfter, availOutAfter) {
       if (self._hadError) {
         return;
       }
-  
+
       let have = availOutBefore - availOutAfter;
       assert(have >= 0, "have should not go down");
-  
+
       if (have > 0) {
         let out = self._buffer.slice(self._offset, self._offset + have);
         self._offset += have;
-  
+
         if (out.length > leftToInflate) {
           out = out.slice(0, leftToInflate);
         }
-  
+
         buffers.push(out);
         nread += out.length;
         leftToInflate -= out.length;
-  
+
         if (leftToInflate === 0) {
           return false;
         }
       }
-  
+
       if (availOutAfter === 0 || self._offset >= self._chunkSize) {
         availOutBefore = self._chunkSize;
         self._offset = 0;
         self._buffer = Buffer.allocUnsafe(self._chunkSize);
       }
-  
+
       if (availOutAfter === 0) {
         inOff += availInBefore - availInAfter;
         availInBefore = availInAfter;
-  
+
         return true;
       }
-  
+
       return false;
     }
-  
+
     assert(this._handle, "zlib binding closed");
     let res;
     do {
@@ -101,11 +100,11 @@ export class Inflate  extends zlib.Inflate{
       // Node 8 --> 9 compatibility check
       res = res || this._writeState;
     } while (!this._hadError && handleChunk(res[0], res[1]));
-  
+
     if (this._hadError) {
       throw error;
     }
-  
+
     if (nread >= kMaxLength) {
       _close(this);
       throw new RangeError(
@@ -114,16 +113,12 @@ export class Inflate  extends zlib.Inflate{
           " bytes",
       );
     }
-  
+
     let buf = Buffer.concat(buffers, nread);
     _close(this);
-  
+
     return buf;
   }
-}
-
-export function createInflate(opts) {
-  return new Inflate(opts);
 }
 
 function _close(engine, callback) {
@@ -139,7 +134,6 @@ function _close(engine, callback) {
   engine._handle.close();
   engine._handle = null;
 }
-
 
 // util.inherits(Inflate, zlib.Inflate);
 
@@ -163,4 +157,8 @@ export function inflateSync(buffer, opts) {
   return zlibBufferSync(new Inflate(opts), buffer);
 }
 
-export default inflateSync
+export function createInflate(opts) {
+  return new Inflate(opts);
+}
+
+export default inflateSync;

@@ -8,7 +8,7 @@ function filterNone(pxData, pxPos, byteWidth, rawData, rawPos) {
 
 function filterSumNone(pxData, pxPos, byteWidth) {
   let sum = 0;
-  let length = pxPos + byteWidth;
+  const length = pxPos + byteWidth;
 
   for (let i = pxPos; i < length; i++) {
     sum += Math.abs(pxData[i]);
@@ -18,8 +18,8 @@ function filterSumNone(pxData, pxPos, byteWidth) {
 
 function filterSub(pxData, pxPos, byteWidth, rawData, rawPos, bpp) {
   for (let x = 0; x < byteWidth; x++) {
-    let left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
-    let val = pxData[pxPos + x] - left;
+    const left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
+    const val = pxData[pxPos + x] - left;
 
     rawData[rawPos + x] = val;
   }
@@ -28,8 +28,8 @@ function filterSub(pxData, pxPos, byteWidth, rawData, rawPos, bpp) {
 function filterSumSub(pxData, pxPos, byteWidth, bpp) {
   let sum = 0;
   for (let x = 0; x < byteWidth; x++) {
-    let left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
-    let val = pxData[pxPos + x] - left;
+    const left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
+    const val = pxData[pxPos + x] - left;
 
     sum += Math.abs(val);
   }
@@ -39,8 +39,8 @@ function filterSumSub(pxData, pxPos, byteWidth, bpp) {
 
 function filterUp(pxData, pxPos, byteWidth, rawData, rawPos) {
   for (let x = 0; x < byteWidth; x++) {
-    let up = pxPos > 0 ? pxData[pxPos + x - byteWidth] : 0;
-    let val = pxData[pxPos + x] - up;
+    const up = pxPos > 0 ? pxData[pxPos + x - byteWidth] : 0;
+    const val = pxData[pxPos + x] - up;
 
     rawData[rawPos + x] = val;
   }
@@ -48,10 +48,10 @@ function filterUp(pxData, pxPos, byteWidth, rawData, rawPos) {
 
 function filterSumUp(pxData, pxPos, byteWidth) {
   let sum = 0;
-  let length = pxPos + byteWidth;
+  const length = pxPos + byteWidth;
   for (let x = pxPos; x < length; x++) {
-    let up = pxPos > 0 ? pxData[x - byteWidth] : 0;
-    let val = pxData[x] - up;
+    const up = pxPos > 0 ? pxData[x - byteWidth] : 0;
+    const val = pxData[x] - up;
 
     sum += Math.abs(val);
   }
@@ -61,9 +61,9 @@ function filterSumUp(pxData, pxPos, byteWidth) {
 
 function filterAvg(pxData, pxPos, byteWidth, rawData, rawPos, bpp) {
   for (let x = 0; x < byteWidth; x++) {
-    let left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
-    let up = pxPos > 0 ? pxData[pxPos + x - byteWidth] : 0;
-    let val = pxData[pxPos + x] - ((left + up) >> 1);
+    const left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
+    const up = pxPos > 0 ? pxData[pxPos + x - byteWidth] : 0;
+    const val = pxData[pxPos + x] - ((left + up) >> 1);
 
     rawData[rawPos + x] = val;
   }
@@ -72,9 +72,9 @@ function filterAvg(pxData, pxPos, byteWidth, rawData, rawPos, bpp) {
 function filterSumAvg(pxData, pxPos, byteWidth, bpp) {
   let sum = 0;
   for (let x = 0; x < byteWidth; x++) {
-    let left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
-    let up = pxPos > 0 ? pxData[pxPos + x - byteWidth] : 0;
-    let val = pxData[pxPos + x] - ((left + up) >> 1);
+    const left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
+    const up = pxPos > 0 ? pxData[pxPos + x - byteWidth] : 0;
+    const val = pxData[pxPos + x] - ((left + up) >> 1);
 
     sum += Math.abs(val);
   }
@@ -84,12 +84,12 @@ function filterSumAvg(pxData, pxPos, byteWidth, bpp) {
 
 function filterPaeth(pxData, pxPos, byteWidth, rawData, rawPos, bpp) {
   for (let x = 0; x < byteWidth; x++) {
-    let left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
-    let up = pxPos > 0 ? pxData[pxPos + x - byteWidth] : 0;
-    let upleft = pxPos > 0 && x >= bpp
+    const left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
+    const up = pxPos > 0 ? pxData[pxPos + x - byteWidth] : 0;
+    const upleft = pxPos > 0 && x >= bpp
       ? pxData[pxPos + x - (byteWidth + bpp)]
       : 0;
-    let val = pxData[pxPos + x] - paethPredictor(left, up, upleft);
+    const val = pxData[pxPos + x] - paethPredictor(left, up, upleft);
 
     rawData[rawPos + x] = val;
   }
@@ -98,12 +98,12 @@ function filterPaeth(pxData, pxPos, byteWidth, rawData, rawPos, bpp) {
 function filterSumPaeth(pxData, pxPos, byteWidth, bpp) {
   let sum = 0;
   for (let x = 0; x < byteWidth; x++) {
-    let left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
-    let up = pxPos > 0 ? pxData[pxPos + x - byteWidth] : 0;
-    let upleft = pxPos > 0 && x >= bpp
+    const left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
+    const up = pxPos > 0 ? pxData[pxPos + x - byteWidth] : 0;
+    const upleft = pxPos > 0 && x >= bpp
       ? pxData[pxPos + x - (byteWidth + bpp)]
       : 0;
-    let val = pxData[pxPos + x] - paethPredictor(left, up, upleft);
+    const val = pxData[pxPos + x] - paethPredictor(left, up, upleft);
 
     sum += Math.abs(val);
   }
@@ -111,7 +111,7 @@ function filterSumPaeth(pxData, pxPos, byteWidth, bpp) {
   return sum;
 }
 
-let filters = {
+const filters = {
   0: filterNone,
   1: filterSub,
   2: filterUp,
@@ -119,7 +119,7 @@ let filters = {
   4: filterPaeth,
 };
 
-let filterSums = {
+const filterSums = {
   0: filterSumNone,
   1: filterSumSub,
   2: filterSumUp,
@@ -140,10 +140,10 @@ export default function (pxData, width, height, options, bpp) {
   if (options.bitDepth === 16) {
     bpp *= 2;
   }
-  let byteWidth = width * bpp;
+  const byteWidth = width * bpp;
   let rawPos = 0;
   let pxPos = 0;
-  let rawData = Buffer.alloc((byteWidth + 1) * height);
+  const rawData = Buffer.alloc((byteWidth + 1) * height);
 
   let sel = filterTypes[0];
 
@@ -153,7 +153,7 @@ export default function (pxData, width, height, options, bpp) {
       let min = Infinity;
 
       for (let i = 0; i < filterTypes.length; i++) {
-        let sum = filterSums[filterTypes[i]](pxData, pxPos, byteWidth, bpp);
+        const sum = filterSums[filterTypes[i]](pxData, pxPos, byteWidth, bpp);
         if (sum < min) {
           sel = filterTypes[i];
           min = sum;

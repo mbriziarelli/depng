@@ -9,7 +9,7 @@
 // 6 5 6 5 6 5 6 5 6
 // 7 7 7 7 7 7 7 7 7
 
-let imagePasses = [
+const imagePasses = [
   {
     // pass 1 - 1px
     x: [0],
@@ -47,14 +47,14 @@ let imagePasses = [
   },
 ];
 
-export function getImagePasses(width, height) {
-  let images = [];
-  let xLeftOver = width % 8;
-  let yLeftOver = height % 8;
-  let xRepeats = (width - xLeftOver) / 8;
-  let yRepeats = (height - yLeftOver) / 8;
+export function getImagePasses(width: number, height: number) {
+  const images = [];
+  const xLeftOver = width % 8;
+  const yLeftOver = height % 8;
+  const xRepeats = (width - xLeftOver) / 8;
+  const yRepeats = (height - yLeftOver) / 8;
   for (let i = 0; i < imagePasses.length; i++) {
-    let pass = imagePasses[i];
+    const pass = imagePasses[i];
     let passWidth = xRepeats * pass.x.length;
     let passHeight = yRepeats * pass.y.length;
     for (let j = 0; j < pass.x.length; j++) {
@@ -78,13 +78,13 @@ export function getImagePasses(width, height) {
   return images;
 }
 
-export function getInterlaceIterator(width) {
-  return function (x, y, pass) {
-    let outerXLeftOver = x % imagePasses[pass].x.length;
-    let outerX = ((x - outerXLeftOver) / imagePasses[pass].x.length) * 8 +
+export function getInterlaceIterator(width: number) {
+  return function (x: number, y: number, pass: number) {
+    const outerXLeftOver = x % imagePasses[pass].x.length;
+    const outerX = ((x - outerXLeftOver) / imagePasses[pass].x.length) * 8 +
       imagePasses[pass].x[outerXLeftOver];
-    let outerYLeftOver = y % imagePasses[pass].y.length;
-    let outerY = ((y - outerYLeftOver) / imagePasses[pass].y.length) * 8 +
+    const outerYLeftOver = y % imagePasses[pass].y.length;
+    const outerY = ((y - outerYLeftOver) / imagePasses[pass].y.length) * 8 +
       imagePasses[pass].y[outerYLeftOver];
     return outerX * 4 + outerY * width * 4;
   };

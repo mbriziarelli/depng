@@ -1,9 +1,8 @@
-import util from "util";
 import zlib from "zlib";
 import ChunkStream from "./chunkstream.ts";
 import FilterAsync from "./filter-parse-async.ts";
 import Parser from "./parser.ts";
-import bitmapper from "./bitmapper.ts";
+import * as bitmapper from "./bitmapper.ts";
 import formatNormaliser from "./format-normaliser.ts";
 
 export default class ParserAsync extends ChunkStream {
@@ -60,19 +59,19 @@ export default class ParserAsync extends ChunkStream {
 
         this._inflate.pipe(this._filter);
       } else {
-        let rowSize = ((this._bitmapInfo.width *
+        const rowSize = ((this._bitmapInfo.width *
             this._bitmapInfo.bpp *
             this._bitmapInfo.depth +
           7) >>
           3) +
           1;
-        let imageSize = rowSize * this._bitmapInfo.height;
-        let chunkSize = Math.max(imageSize, zlib.Z_MIN_CHUNK);
+        const imageSize = rowSize * this._bitmapInfo.height;
+        const chunkSize = Math.max(imageSize, zlib.Z_MIN_CHUNK);
 
         this._inflate = zlib.createInflate({ chunkSize: chunkSize });
         let leftToInflate = imageSize;
 
-        let emitError = this.emit.bind(this, "error");
+        const emitError = this.emit.bind(this, "error");
         this._inflate.on("error", function (err) {
           if (!leftToInflate) {
             return;
@@ -82,7 +81,7 @@ export default class ParserAsync extends ChunkStream {
         });
         this._filter.on("complete", this._complete.bind(this));
 
-        let filterWrite = this._filter.write.bind(this._filter);
+        const filterWrite = this._filter.write.bind(this._filter);
         this._inflate.on("data", function (chunk) {
           if (!leftToInflate) {
             return;

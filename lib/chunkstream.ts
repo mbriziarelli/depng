@@ -1,4 +1,3 @@
-import util from "util";
 import Stream from "stream";
 
 export default class ChunkStream extends Stream {
@@ -23,7 +22,7 @@ export default class ChunkStream extends Stream {
     });
 
     process.nextTick(
-      function () {
+      () => {
         this._process();
 
         // its paused and there is not enought data then ask for more
@@ -32,7 +31,7 @@ export default class ChunkStream extends Stream {
 
           this.emit("drain");
         }
-      }.bind(this),
+      },
     );
   }
 
@@ -111,7 +110,7 @@ export default class ChunkStream extends Stream {
     this._reads.shift(); // == read
 
     // first we need to peek into first buffer
-    let smallerBuf = this._buffers[0];
+    const smallerBuf = this._buffers[0];
 
     // ok there is more data than we need
     if (smallerBuf.length > read.length) {
@@ -133,12 +132,12 @@ export default class ChunkStream extends Stream {
 
     let pos = 0;
     let count = 0;
-    let data = Buffer.alloc(read.length);
+    const data = Buffer.alloc(read.length);
 
     // create buffer for all data
     while (pos < read.length) {
-      let buf = this._buffers[count++];
-      let len = Math.min(buf.length, read.length - pos);
+      const buf = this._buffers[count++];
+      const len = Math.min(buf.length, read.length - pos);
 
       buf.copy(data, pos, 0, len);
       pos += len;
@@ -163,7 +162,7 @@ export default class ChunkStream extends Stream {
     try {
       // as long as there is any data and read requests
       while (this._buffered > 0 && this._reads && this._reads.length > 0) {
-        let read = this._reads[0];
+        const read = this._reads[0];
 
         // read any data (but no more than length)
         if (read.allowLess) {

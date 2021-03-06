@@ -1,11 +1,8 @@
 import constants from "./constants.ts";
 import Packer from "./packer.ts";
-
-let hasSyncZlib = true;
 import zlib from "zlib";
-if (!zlib.deflateSync) {
-  hasSyncZlib = false;
-}
+
+const hasSyncZlib = !!zlib.deflateSync;
 
 export default function (metaData, opt) {
   if (!hasSyncZlib) {
@@ -14,11 +11,11 @@ export default function (metaData, opt) {
     );
   }
 
-  import options = opt || {};
+  const options = opt || {};
 
-  let packer = new Packer(options);
+  const packer = new Packer(options);
 
-  let chunks = [];
+  const chunks = [];
 
   // Signature
   chunks.push(Buffer.from(constants.PNG_SIGNATURE));
@@ -37,7 +34,7 @@ export default function (metaData, opt) {
   );
 
   // compress it
-  let compressedData = zlib.deflateSync(
+  const compressedData = zlib.deflateSync(
     filteredData,
     packer.getDeflateOptions(),
   );
@@ -52,4 +49,4 @@ export default function (metaData, opt) {
   chunks.push(packer.packIEND());
 
   return Buffer.concat(chunks);
-};
+}

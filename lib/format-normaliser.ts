@@ -3,7 +3,7 @@ function dePalette(indata, outdata, width, height, palette) {
   // use values from palette
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      let color = palette[indata[pxPos]];
+      const color = palette[indata[pxPos]];
 
       if (!color) {
         throw new Error("index " + indata[pxPos] + " not in palette");
@@ -45,8 +45,8 @@ function replaceTransparentColor(indata, outdata, width, height, transColor) {
 }
 
 function scaleDepth(indata, outdata, width, height, depth) {
-  let maxOutSample = 255;
-  let maxInSample = Math.pow(2, depth) - 1;
+  const maxOutSample = 255;
+  const maxInSample = Math.pow(2, depth) - 1;
   let pxPos = 0;
 
   for (let y = 0; y < height; y++) {
@@ -62,12 +62,12 @@ function scaleDepth(indata, outdata, width, height, depth) {
 }
 
 export default function (indata, imageData, skipRescale = false) {
-  let depth = imageData.depth;
-  let width = imageData.width;
-  let height = imageData.height;
-  let colorType = imageData.colorType;
-  let transColor = imageData.transColor;
-  let palette = imageData.palette;
+  const depth = imageData.depth;
+  const width = imageData.width;
+  const height = imageData.height;
+  const colorType = imageData.colorType;
+  const transColor = imageData.transColor;
+  const palette = imageData.palette;
 
   let outdata = indata; // only different for 16 bits
 

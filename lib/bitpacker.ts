@@ -1,13 +1,13 @@
 import constants from "./constants.ts";
 
 export default function (dataIn, width, height, options) {
-  let outHasAlpha =
+  const outHasAlpha =
     [constants.COLORTYPE_COLOR_ALPHA, constants.COLORTYPE_ALPHA].indexOf(
       options.colorType,
     ) !== -1;
   if (options.colorType === options.inputColorType) {
-    let bigEndian = (function () {
-      let buffer = new ArrayBuffer(2);
+    const bigEndian = (function () {
+      const buffer = new ArrayBuffer(2);
       new DataView(buffer).setInt16(0, 256, true /* littleEndian */);
       // Int16Array uses the platform's endianness.
       return new Int16Array(buffer)[0] !== 256;
@@ -19,7 +19,9 @@ export default function (dataIn, width, height, options) {
   }
 
   // map to a UInt16 array if data is 16bit, fix endianness below
-  let data = options.bitDepth !== 16 ? dataIn : new Uint16Array(dataIn.buffer);
+  const data = options.bitDepth !== 16
+    ? dataIn
+    : new Uint16Array(dataIn.buffer);
 
   let maxValue = 255;
   let inBpp = constants.COLORTYPE_TO_BPP_MAP[options.inputColorType];
@@ -31,12 +33,12 @@ export default function (dataIn, width, height, options) {
     maxValue = 65535;
     outBpp *= 2;
   }
-  let outData = Buffer.alloc(width * height * outBpp);
+  const outData = Buffer.alloc(width * height * outBpp);
 
   let inIndex = 0;
   let outIndex = 0;
 
-  let bgColor = options.bgColor || {};
+  const bgColor = options.bgColor || {};
   if (bgColor.red === undefined) {
     bgColor.red = maxValue;
   }
@@ -105,7 +107,7 @@ export default function (dataIn, width, height, options) {
 
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      let rgba = getRGBA(data, inIndex);
+      const rgba = getRGBA(data, inIndex);
 
       switch (options.colorType) {
         case constants.COLORTYPE_COLOR_ALPHA:
@@ -129,7 +131,7 @@ export default function (dataIn, width, height, options) {
         case constants.COLORTYPE_ALPHA:
         case constants.COLORTYPE_GRAYSCALE: {
           // Convert to grayscale and alpha
-          let grayscale = (rgba.red + rgba.green + rgba.blue) / 3;
+          const grayscale = (rgba.red + rgba.green + rgba.blue) / 3;
           if (options.bitDepth === 8) {
             outData[outIndex] = grayscale;
             if (outHasAlpha) {

@@ -4,7 +4,7 @@ export default class SyncReader {
     this._reads = [];
   }
 
-  read(length, callback) {
+  read(length: number, callback) {
     this._reads.push({
       length: Math.abs(length), // if length < 0 then at most this length
       allowLess: length < 0,
@@ -15,7 +15,7 @@ export default class SyncReader {
   process() {
     // as long as there is any data and read requests
     while (this._reads.length > 0 && this._buffer.length) {
-      let read = this._reads[0];
+      const read = this._reads[0];
 
       if (
         this._buffer.length &&
@@ -24,7 +24,7 @@ export default class SyncReader {
         // ok there is any data so that we can satisfy this request
         this._reads.shift(); // == read
 
-        let buf = this._buffer;
+        const buf = this._buffer;
 
         this._buffer = buf.slice(read.length);
 
