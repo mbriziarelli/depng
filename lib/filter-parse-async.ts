@@ -1,7 +1,7 @@
 import ChunkStream from "./chunkstream.ts";
 import Filter from "./filter-parse.ts";
 
-export default class FilterAsync extends ChunkStream {
+export class FilterAsync extends ChunkStream {
   _filter: Filter;
 
   constructor() {
@@ -22,3 +22,5 @@ export default class FilterAsync extends ChunkStream {
     this._filter.start();
   }
 }
+
+export default FilterAsync;

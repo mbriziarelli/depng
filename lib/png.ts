@@ -3,15 +3,30 @@ import Parser from "./parser-async.ts";
 import Packer from "./packer-async.ts";
 import * as PNGSync from "./png-sync.ts";
 
+export interface PNGOptions {
+  width?: number;
+  height?: number;
+  fill?: boolean;
+}
+
 export class PNG extends Stream {
-  constructor(options) {
+  public width: number;
+  public height: number;
+  public data: any;
+  public gamma: number;
+  public readable: boolean;
+  public writable: boolean;
+  private _parser: Parser;
+  private _packer: Packer;
+
+  constructor(options: PNGOptions) {
     super();
 
     options = options || {};
 
     // coerce pixel dimensions to integers (also coerces undefined -> 0):
-    this.width = options.width | 0;
-    this.height = options.height | 0;
+    this.width = options.width ?? 0;
+    this.height = options.height ?? 0;
 
     this.data = this.width > 0 && this.height > 0
       ? Buffer.alloc(4 * this.width * this.height)
@@ -32,10 +47,10 @@ export class PNG extends Stream {
     this._parser.on("gamma", this._gamma.bind(this));
     this._parser.on(
       "parsed",
-      function (data) {
+      (data) => {
         this.data = data;
         this.emit("parsed", data);
-      }.bind(this),
+      },
     );
 
     this._packer = new Packer(options);
@@ -54,9 +69,9 @@ export class PNG extends Stream {
     }
 
     process.nextTick(
-      function () {
+      () => {
         this._packer.pack(this.data, this.width, this.height, this.gamma);
-      }.bind(this),
+      },
     );
 
     return this;
@@ -64,20 +79,18 @@ export class PNG extends Stream {
 
   parse(data, callback) {
     if (callback) {
-      let onParsed, onError;
-
-      onParsed = function (parsedData) {
+      const onParsed = (parsedData) => {
         this.removeListener("error", onError);
 
         this.data = parsedData;
         callback(null, this);
-      }.bind(this);
+      };
 
-      onError = function (err) {
+      const onError = (err) => {
         this.removeListener("parsed", onParsed);
 
         callback(err, null);
-      }.bind(this);
+      };
 
       this.once("parsed", onParsed);
       this.once("error", onError);
@@ -113,7 +126,16 @@ export class PNG extends Stream {
     }
   }
 
-  static bitblt(src, dst, srcX, srcY, width, height, deltaX, deltaY) {
+  static bitblt(
+    src: PNG,
+    dst: PNG,
+    srcX: number,
+    srcY: number,
+    width: number,
+    height: number,
+    deltaX: number,
+    deltaY: number,
+  ) {
     // coerce pixel dimensions to integers (also coerces undefined -> 0):
     srcX |= 0;
     srcY |= 0;
@@ -151,23 +173,23 @@ export class PNG extends Stream {
   }
 
   bitblt(
-    dst,
-    srcX,
-    srcY,
-    width,
-    height,
-    deltaX,
-    deltaY,
+    dst: PNG,
+    srcX: number,
+    srcY: number,
+    width: number,
+    height: number,
+    deltaX: number,
+    deltaY: number,
   ) {
     PNG.bitblt(this, dst, srcX, srcY, width, height, deltaX, deltaY);
     return this;
   }
 
-  static adjustGamma(src) {
+  static adjustGamma(src: PNG) {
     if (src.gamma) {
       for (let y = 0; y < src.height; y++) {
         for (let x = 0; x < src.width; x++) {
-          let idx = (src.width * y + x) << 2;
+          const idx = (src.width * y + x) << 2;
 
           for (let i = 0; i < 3; i++) {
             let sample = src.data[idx + i] / 255;

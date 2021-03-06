@@ -1,4 +1,4 @@
-function dePalette(indata, outdata, width, height, palette) {
+function dePalette(indata, outdata, width: number, height: number, palette) {
   let pxPos = 0;
   // use values from palette
   for (let y = 0; y < height; y++) {
@@ -17,7 +17,13 @@ function dePalette(indata, outdata, width, height, palette) {
   }
 }
 
-function replaceTransparentColor(indata, outdata, width, height, transColor) {
+function replaceTransparentColor(
+  indata,
+  outdata,
+  width: number,
+  height: number,
+  transColor,
+) {
   let pxPos = 0;
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
@@ -61,7 +67,7 @@ function scaleDepth(indata, outdata, width, height, depth) {
   }
 }
 
-export default function (indata, imageData, skipRescale = false) {
+export function normalizeFormat(indata, imageData, skipRescale = false) {
   const depth = imageData.depth;
   const width = imageData.width;
   const height = imageData.height;
@@ -89,3 +95,5 @@ export default function (indata, imageData, skipRescale = false) {
   }
   return outdata;
 }
+
+export default normalizeFormat;

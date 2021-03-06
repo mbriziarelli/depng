@@ -1,15 +1,12 @@
 import * as interlaceUtils from "./interlace.ts";
 import paethPredictor from "./paeth-predictor.ts";
 
-function getByteWidth(width, bpp, depth) {
-  let byteWidth = width * bpp;
-  if (depth !== 8) {
-    byteWidth = Math.ceil(byteWidth / (8 / depth));
-  }
-  return byteWidth;
+function getByteWidth(width: number, bpp: number, depth: number) {
+  const byteWidth = width * bpp;
+  return (depth !== 8) ? Math.ceil(byteWidth / (8 / depth)) : byteWidth;
 }
 
-export default class Filter {
+export class Filter {
   constructor(bitmapInfo, dependencies) {
     const width = bitmapInfo.width;
     const height = bitmapInfo.height;
@@ -177,3 +174,5 @@ export default class Filter {
     }
   }
 }
+
+export default Filter;

@@ -1,4 +1,4 @@
-export default class SyncReader {
+export class SyncReader {
   constructor(buffer) {
     this._buffer = buffer;
     this._reads = [];
@@ -43,3 +43,5 @@ export default class SyncReader {
     }
   }
 }
+
+export default SyncReader;

@@ -3,7 +3,7 @@ import Stream from "stream";
 import constants from "./constants.ts";
 import Packer from "./packer.ts";
 
-export default class PackerAsync extends Stream {
+export class PackerAsync extends Stream {
   constructor(opt) {
     super();
 
@@ -47,3 +47,5 @@ export default class PackerAsync extends Stream {
     this._deflate.end(filteredData);
   }
 }
+
+export default PackerAsync;

@@ -4,7 +4,7 @@ import bitPacker from "./bitpacker.ts";
 import filter from "./filter-pack.ts";
 import zlib from "zlib";
 
-export default class Packer {
+export class Packer {
   constructor(options) {
     this._options = options;
 
@@ -129,3 +129,5 @@ export default class Packer {
     return this._packChunk(constants.TYPE_IEND, null);
   }
 }
+
+export default Packer;

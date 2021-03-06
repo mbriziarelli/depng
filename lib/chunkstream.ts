@@ -1,6 +1,12 @@
 import Stream from "stream";
 
-export default class ChunkStream extends Stream {
+export class ChunkStream extends Stream {
+  private _buffers: any[] | null;
+  private _buffered: number;
+  private _reads: any[] | null;
+  private _paused: boolean;
+  private _encoding: string;
+
   constructor() {
     super();
 
@@ -186,3 +192,5 @@ export default class ChunkStream extends Stream {
     }
   }
 }
+
+export default ChunkStream;

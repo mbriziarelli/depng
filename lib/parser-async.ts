@@ -5,7 +5,7 @@ import Parser from "./parser.ts";
 import * as bitmapper from "./bitmapper.ts";
 import formatNormaliser from "./format-normaliser.ts";
 
-export default class ParserAsync extends ChunkStream {
+export class ParserAsync extends ChunkStream {
   constructor(options) {
     super();
 
@@ -164,3 +164,5 @@ export default class ParserAsync extends ChunkStream {
     this.emit("parsed", normalisedBitmapData);
   }
 }
+
+export default ParserAsync;

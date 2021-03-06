@@ -11,7 +11,7 @@ if (!zlib.deflateSync) {
   hasSyncZlib = false;
 }
 
-export default function (buffer, options) {
+export function parseSync(buffer, options) {
   if (!hasSyncZlib) {
     throw new Error(
       "To use the sync capability of this library in old node versions, please pin pngjs to v2.3.0",
@@ -110,3 +110,5 @@ export default function (buffer, options) {
 
   return metaData;
 }
+
+export default parseSync;

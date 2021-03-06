@@ -4,7 +4,7 @@ import zlib from "zlib";
 
 const hasSyncZlib = !!zlib.deflateSync;
 
-export default function (metaData, opt) {
+export function packSync(metaData, opt) {
   if (!hasSyncZlib) {
     throw new Error(
       "To use the sync capability of this library in old node versions, please pin pngjs to v2.3.0",
@@ -50,3 +50,5 @@ export default function (metaData, opt) {
 
   return Buffer.concat(chunks);
 }
+
+export default packSync;

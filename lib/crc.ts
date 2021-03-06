@@ -14,7 +14,7 @@ let crcTable = [];
   }
 })();
 
-export default class CrcCalculator {
+export class CrcCalculator {
   constructor() {
     this._crc = -1;
   }
@@ -38,3 +38,5 @@ export default class CrcCalculator {
     return crc ^ -1;
   }
 }
+
+export default CrcCalculator;

@@ -1,12 +1,18 @@
 import paethPredictor from "./paeth-predictor.ts";
 
-function filterNone(pxData, pxPos, byteWidth, rawData, rawPos) {
+function filterNone(
+  pxData,
+  pxPos: number,
+  byteWidth: number,
+  rawData,
+  rawPos: number,
+) {
   for (let x = 0; x < byteWidth; x++) {
     rawData[rawPos + x] = pxData[pxPos + x];
   }
 }
 
-function filterSumNone(pxData, pxPos, byteWidth) {
+function filterSumNone(pxData, pxPos: number, byteWidth: number) {
   let sum = 0;
   const length = pxPos + byteWidth;
 
@@ -16,7 +22,14 @@ function filterSumNone(pxData, pxPos, byteWidth) {
   return sum;
 }
 
-function filterSub(pxData, pxPos, byteWidth, rawData, rawPos, bpp) {
+function filterSub(
+  pxData,
+  pxPos: number,
+  byteWidth: number,
+  rawData,
+  rawPos: number,
+  bpp: number,
+) {
   for (let x = 0; x < byteWidth; x++) {
     const left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
     const val = pxData[pxPos + x] - left;
@@ -25,7 +38,7 @@ function filterSub(pxData, pxPos, byteWidth, rawData, rawPos, bpp) {
   }
 }
 
-function filterSumSub(pxData, pxPos, byteWidth, bpp) {
+function filterSumSub(pxData, pxPos: number, byteWidth: number, bpp: number) {
   let sum = 0;
   for (let x = 0; x < byteWidth; x++) {
     const left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
@@ -37,7 +50,13 @@ function filterSumSub(pxData, pxPos, byteWidth, bpp) {
   return sum;
 }
 
-function filterUp(pxData, pxPos, byteWidth, rawData, rawPos) {
+function filterUp(
+  pxData,
+  pxPos: number,
+  byteWidth: number,
+  rawData,
+  rawPos: number,
+) {
   for (let x = 0; x < byteWidth; x++) {
     const up = pxPos > 0 ? pxData[pxPos + x - byteWidth] : 0;
     const val = pxData[pxPos + x] - up;
@@ -46,7 +65,7 @@ function filterUp(pxData, pxPos, byteWidth, rawData, rawPos) {
   }
 }
 
-function filterSumUp(pxData, pxPos, byteWidth) {
+function filterSumUp(pxData, pxPos: number, byteWidth: number) {
   let sum = 0;
   const length = pxPos + byteWidth;
   for (let x = pxPos; x < length; x++) {
@@ -59,7 +78,14 @@ function filterSumUp(pxData, pxPos, byteWidth) {
   return sum;
 }
 
-function filterAvg(pxData, pxPos, byteWidth, rawData, rawPos, bpp) {
+function filterAvg(
+  pxData,
+  pxPos: number,
+  byteWidth: number,
+  rawData,
+  rawPos: number,
+  bpp: number,
+) {
   for (let x = 0; x < byteWidth; x++) {
     const left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
     const up = pxPos > 0 ? pxData[pxPos + x - byteWidth] : 0;
@@ -69,7 +95,7 @@ function filterAvg(pxData, pxPos, byteWidth, rawData, rawPos, bpp) {
   }
 }
 
-function filterSumAvg(pxData, pxPos, byteWidth, bpp) {
+function filterSumAvg(pxData, pxPos: number, byteWidth: number, bpp: number) {
   let sum = 0;
   for (let x = 0; x < byteWidth; x++) {
     const left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
@@ -82,7 +108,14 @@ function filterSumAvg(pxData, pxPos, byteWidth, bpp) {
   return sum;
 }
 
-function filterPaeth(pxData, pxPos, byteWidth, rawData, rawPos, bpp) {
+function filterPaeth(
+  pxData,
+  pxPos: number,
+  byteWidth: number,
+  rawData,
+  rawPos: number,
+  bpp: number,
+) {
   for (let x = 0; x < byteWidth; x++) {
     const left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
     const up = pxPos > 0 ? pxData[pxPos + x - byteWidth] : 0;
@@ -95,7 +128,7 @@ function filterPaeth(pxData, pxPos, byteWidth, rawData, rawPos, bpp) {
   }
 }
 
-function filterSumPaeth(pxData, pxPos, byteWidth, bpp) {
+function filterSumPaeth(pxData, pxPos: number, byteWidth: number, bpp: number) {
   let sum = 0;
   for (let x = 0; x < byteWidth; x++) {
     const left = x >= bpp ? pxData[pxPos + x - bpp] : 0;
@@ -127,7 +160,13 @@ const filterSums = {
   4: filterSumPaeth,
 };
 
-export default function (pxData, width, height, options, bpp) {
+export function packFilter(
+  pxData,
+  width: number,
+  height: number,
+  options,
+  bpp: number,
+) {
   let filterTypes;
   if (!("filterType" in options) || options.filterType === -1) {
     filterTypes = [0, 1, 2, 3, 4];
@@ -167,5 +206,8 @@ export default function (pxData, width, height, options, bpp) {
     rawPos += byteWidth;
     pxPos += byteWidth;
   }
+
   return rawData;
 }
+
+export default packFilter;

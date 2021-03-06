@@ -1,6 +1,6 @@
 import constants from "./constants.ts";
 
-export default function (dataIn, width, height, options) {
+export function packBits(dataIn, width, height, options) {
   const outHasAlpha =
     [constants.COLORTYPE_COLOR_ALPHA, constants.COLORTYPE_ALPHA].indexOf(
       options.colorType,
@@ -156,3 +156,5 @@ export default function (dataIn, width, height, options) {
 
   return outData;
 }
+
+export default packBits;
