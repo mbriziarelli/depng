@@ -1,3 +1,5 @@
+import { Buffer } from "https://deno.land/std@0.89.0/node/buffer.ts";
+
 export declare namespace Depnog {
   // Pack types used in packer.ts
   enum PackType {
@@ -57,5 +59,11 @@ export declare namespace Depnog {
     inputHasAlpha?: boolean;
     // an object containing red, green, and blue values between 0 and 255 that is used when packing a PNG if alpha is not to be included (default: 255,255,255)
     bgColor?: Color;
+  }
+
+  interface Read {
+    length: number;
+    allowLess: boolean;
+    func: (_: Buffer) => void;
   }
 }

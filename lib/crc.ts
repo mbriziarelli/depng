@@ -1,4 +1,6 @@
-let crcTable = [];
+import { Buffer } from "https://deno.land/std@0.89.0/node/buffer.ts";
+
+const crcTable: number[] = [];
 
 (function () {
   for (let i = 0; i < 256; i++) {
@@ -15,26 +17,31 @@ let crcTable = [];
 })();
 
 export class CrcCalculator {
-  constructor() {
+  private _crc: number;
+
+  public constructor() {
     this._crc = -1;
   }
 
-  write(data) {
-    for (let i = 0; i < data.length; i++) {
-      this._crc = crcTable[(this._crc ^ data[i]) & 0xff] ^ (this._crc >>> 8);
+  public write(buf: Buffer) {
+    for (let i = 0; i < buf.length; i++) {
+      this._crc = crcTable[(this._crc ^ buf[i]) & 0xff] ^ (this._crc >>> 8);
     }
+
     return true;
   }
 
-  crc32() {
+  public crc32() {
     return this._crc ^ -1;
   }
 
-  static crc32(buf) {
+  public static crc32(buf: Buffer) {
     let crc = -1;
+
     for (let i = 0; i < buf.length; i++) {
       crc = crcTable[(crc ^ buf[i]) & 0xff] ^ (crc >>> 8);
     }
+
     return crc ^ -1;
   }
 }

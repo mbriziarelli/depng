@@ -47,8 +47,14 @@ const imagePasses = [
   },
 ];
 
+export interface ImagePass {
+  width: number;
+  height: number;
+  index: number;
+}
+
 export function getImagePasses(width: number, height: number) {
-  const images = [];
+  const images: ImagePass[] = [];
   const xLeftOver = width % 8;
   const yLeftOver = height % 8;
   const xRepeats = (width - xLeftOver) / 8;

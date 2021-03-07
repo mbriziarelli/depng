@@ -8,7 +8,7 @@ function getByteWidth(width: number, bpp: number, depth: number) {
 }
 
 export class Filter {
-  constructor(bitmapInfo, dependencies) {
+  public constructor(bitmapInfo, dependencies) {
     const width = bitmapInfo.width;
     const height = bitmapInfo.height;
     const interlace = bitmapInfo.interlace;
@@ -51,17 +51,17 @@ export class Filter {
     }
   }
 
-  start() {
+  public start() {
     this.read(
       this._images[this._imageIndex].byteWidth + 1,
       this._reverseFilterLine.bind(this),
     );
   }
 
-  _unFilterType1(
+  private _unFilterType1(
     rawData,
     unfilteredLine,
-    byteWidth,
+    byteWidth: number,
   ) {
     const xComparison = this._xComparison;
     const xBiggerThan = xComparison - 1;
@@ -73,10 +73,10 @@ export class Filter {
     }
   }
 
-  _unFilterType2(
+  private _unFilterType2(
     rawData,
     unfilteredLine,
-    byteWidth,
+    byteWidth: number,
   ) {
     const lastLine = this._lastLine;
 
@@ -87,10 +87,10 @@ export class Filter {
     }
   }
 
-  _unFilterType3(
+  private _unFilterType3(
     rawData,
     unfilteredLine,
-    byteWidth,
+    byteWidth: number,
   ) {
     const xComparison = this._xComparison;
     const xBiggerThan = xComparison - 1;
@@ -105,10 +105,10 @@ export class Filter {
     }
   }
 
-  _unFilterType4(
+  private _unFilterType4(
     rawData,
     unfilteredLine,
-    byteWidth,
+    byteWidth: number,
   ) {
     const xComparison = this._xComparison;
     const xBiggerThan = xComparison - 1;
@@ -126,7 +126,7 @@ export class Filter {
     }
   }
 
-  _reverseFilterLine(rawData) {
+  private _reverseFilterLine(rawData) {
     const filter = rawData[0];
     let unfilteredLine;
     let currentImage = this._images[this._imageIndex];

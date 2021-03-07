@@ -1,10 +1,16 @@
+import { Buffer } from "https://deno.land/std@0.89.0/node/buffer.ts";
+import { Depnog } from "./types.ts";
+
 export class SyncReader {
-  public constructor(buffer) {
+  private _buffer: Buffer;
+  private _reads: Depnog.Read[];
+
+  public constructor(buffer: Buffer) {
     this._buffer = buffer;
     this._reads = [];
   }
 
-  public read(length: number, callback) {
+  public read(length: number, callback: (_: Buffer) => void) {
     this._reads.push({
       length: Math.abs(length), // if length < 0 then at most this length
       allowLess: length < 0,
