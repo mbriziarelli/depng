@@ -1,8 +1,13 @@
 import Stream from "stream";
+import { Buffer } from "https://deno.land/std@0.89.0/node/buffer.ts";
 import { constants } from "./constants.ts";
 import { Packer } from "./packer.ts";
 
 export class PackerAsync extends Stream {
+  public readable: boolean;
+  private _packer: Packer;
+  private _deflate: any;
+
   constructor(opt) {
     super();
 
@@ -14,9 +19,9 @@ export class PackerAsync extends Stream {
     this.readable = true;
   }
 
-  pack(data, width, height, gamma) {
+  pack(data: Buffer, width: number, height: number, gamma: number) {
     // Signature
-    this.emit("data", new Uint8Array(constants.PNG_SIGNATURE));
+    this.emit("data", new Buffer(constants.PNG_SIGNATURE));
     this.emit("data", this._packer.packIHDR(width, height));
 
     if (gamma) {

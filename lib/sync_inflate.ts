@@ -1,3 +1,4 @@
+import { Buffer } from "https://deno.land/std@0.89.0/node/buffer.ts";
 import { ok as assert } from "assert";
 import zlib from "zlib";
 import { kMaxLength } from "buffer";
@@ -69,7 +70,7 @@ export class Inflate extends zlib.Inflate {
       if (availOutAfter === 0 || this._offset >= this._chunkSize) {
         availOutBefore = this._chunkSize;
         this._offset = 0;
-        this._buffer = new Uint8Array(this._chunkSize);
+        this._buffer = new Buffer(this._chunkSize);
       }
 
       if (availOutAfter === 0) {
@@ -134,11 +135,11 @@ function _close(engine, callback: () => void) {
 
 // util.inherits(Inflate, zlib.Inflate);
 
-function zlibBufferSync(engine, buffer: string | Uint8Array) {
+function zlibBufferSync(engine, buffer: string | Buffer) {
   if (typeof buffer === "string") {
-    buffer = new TextEncoder().encode(buffer);
+    buffer = Buffer.from(buffer);
   }
-  if (!(buffer instanceof Uint8Array)) {
+  if (!(buffer instanceof Buffer)) {
     throw new TypeError("Not a string or buffer");
   }
 
@@ -150,7 +151,7 @@ function zlibBufferSync(engine, buffer: string | Uint8Array) {
   return engine._processChunk(buffer, flushFlag);
 }
 
-export function inflateSync(buffer: string | Uint8Array, opts) {
+export function inflateSync(buffer: string | Buffer, opts) {
   return zlibBufferSync(new Inflate(opts), buffer);
 }
 

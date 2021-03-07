@@ -1,68 +1,65 @@
 import zlib from "zlib";
+import { Buffer } from "https://deno.land/std@0.89.0/node/buffer.ts";
 import { constants } from "./constants.ts";
 import { CrcCalculator } from "./crc.ts";
 import { packBits } from "./bitpacker.ts";
 import { packFilter } from "./filter_pack.ts";
+import { Depnog } from "./types.ts";
 
 export class Packer {
-  constructor(options) {
-    this._options = options;
+  private _options: Depnog.Options;
 
-    options.deflateChunkSize = options.deflateChunkSize || 32 * 1024;
-    options.deflateLevel = options.deflateLevel != null
-      ? options.deflateLevel
-      : 9;
-    options.deflateStrategy = options.deflateStrategy != null
-      ? options.deflateStrategy
-      : 3;
-    options.inputHasAlpha = options.inputHasAlpha != null
-      ? options.inputHasAlpha
-      : true;
-    options.deflateFactory = options.deflateFactory || zlib.createDeflate;
-    options.bitDepth = options.bitDepth || 8;
-    // This is outputColorType
-    options.colorType = typeof options.colorType === "number"
-      ? options.colorType
-      : constants.COLORTYPE_COLOR_ALPHA;
-    options.inputColorType = typeof options.inputColorType === "number"
-      ? options.inputColorType
-      : constants.COLORTYPE_COLOR_ALPHA;
+  private static supportedColorTypes = [
+    Depnog.ColorType.GrayScale,
+    Depnog.ColorType.Color,
+    Depnog.ColorType.ColorAlpha,
+    Depnog.ColorType.Alpha,
+  ];
 
-    if (
-      [
-        constants.COLORTYPE_GRAYSCALE,
-        constants.COLORTYPE_COLOR,
-        constants.COLORTYPE_COLOR_ALPHA,
-        constants.COLORTYPE_ALPHA,
-      ].indexOf(options.colorType) === -1
-    ) {
+  private static supportedInputColorTypes = [
+    Depnog.ColorType.GrayScale,
+    Depnog.ColorType.Color,
+    Depnog.ColorType.ColorAlpha,
+    Depnog.ColorType.Alpha,
+  ];
+
+  private static supportedBitDepth: Depnog.BitDepth[] = [8, 16];
+
+  public constructor(options: Depnog.Options) {
+    this._options = { ...options };
+
+    this._options.deflateChunkSize = options.deflateChunkSize ?? 32 * 1024;
+    this._options.deflateLevel = options.deflateLevel ?? 9;
+    this._options.deflateStrategy = options.deflateStrategy ?? 3;
+    this._options.inputHasAlpha = options.inputHasAlpha ?? true;
+    this._options.deflateFactory = options.deflateFactory || zlib.createDeflate;
+    this._options.bitDepth = options.bitDepth ?? 8;
+    this._options.colorType = options.colorType ?? Depnog.ColorType.ColorAlpha;
+    this._options.inputColorType = options.inputColorType ??
+      Depnog.ColorType.ColorAlpha;
+
+    if (!Packer.supportedColorTypes.includes(this._options.colorType)) {
       throw new Error(
-        "option color type:" + options.colorType +
-          " is not supported at present",
+        `option color type:${this._options.colorType} is not supported at present`,
       );
     }
+
     if (
-      [
-        constants.COLORTYPE_GRAYSCALE,
-        constants.COLORTYPE_COLOR,
-        constants.COLORTYPE_COLOR_ALPHA,
-        constants.COLORTYPE_ALPHA,
-      ].indexOf(options.inputColorType) === -1
+      !Packer.supportedInputColorTypes.includes(this._options.inputColorType)
     ) {
       throw new Error(
-        "option input color type:" +
-          options.inputColorType +
-          " is not supported at present",
+        `option input color type:${this._options.inputColorType} is not supported at present`,
       );
     }
-    if (options.bitDepth !== 8 && options.bitDepth !== 16) {
+
+    if (!Packer.supportedBitDepth.includes(this._options.bitDepth)) {
       throw new Error(
-        "option bit depth:" + options.bitDepth + " is not supported at present",
+        `option bit depth:${this._options.bitDepth} is not supported at present`,
       );
     }
   }
 
-  getDeflateOptions() {
+  public getDeflateOptions() {
     return {
       chunkSize: this._options.deflateChunkSize,
       level: this._options.deflateLevel,
@@ -70,14 +67,13 @@ export class Packer {
     };
   }
 
-  createDeflate() {
+  public createDeflate() {
     return this._options.deflateFactory(this.getDeflateOptions());
   }
 
-  filterData(data, width, height) {
+  public filterData(data: Buffer, width: number, height: number) {
     // convert to correct format for filtering (e.g. right bpp and bit depth)
     const packedData = packBits(data, width, height, this._options);
-
     // filter pixel data
     const bpp = constants.COLORTYPE_TO_BPP_MAP[this._options.colorType];
     const filteredData = packFilter(
@@ -87,12 +83,13 @@ export class Packer {
       this._options,
       bpp,
     );
+
     return filteredData;
   }
 
-  _packChunk(type, data) {
+  private _packChunk(type: Depnog.PackType, data?: Buffer) {
     const len = data ? data.length : 0;
-    const buf = new Uint8Array(len + 12);
+    const buf = new Buffer(len + 12);
 
     buf.writeUInt32BE(len, 0);
     buf.writeUInt32BE(type, 4);
@@ -108,14 +105,14 @@ export class Packer {
     return buf;
   }
 
-  packGAMA(gamma) {
-    const buf = new Uint8Array(4);
+  public packGAMA(gamma: number) {
+    const buf = new Buffer(4);
     buf.writeUInt32BE(Math.floor(gamma * constants.GAMMA_DIVISION), 0);
-    return this._packChunk(constants.TYPE_gAMA, buf);
+    return this._packChunk(Depnog.PackType.gAMA, buf);
   }
 
-  packIHDR(width, height) {
-    const buf = new Uint8Array(13);
+  public packIHDR(width: number, height: number) {
+    const buf = new Buffer(13);
     buf.writeUInt32BE(width, 0);
     buf.writeUInt32BE(height, 4);
     buf[8] = this._options.bitDepth; // Bit depth
@@ -124,14 +121,14 @@ export class Packer {
     buf[11] = 0; // filter
     buf[12] = 0; // interlace
 
-    return this._packChunk(constants.TYPE_IHDR, buf);
+    return this._packChunk(Depnog.PackType.IHDR, buf);
   }
 
-  packIDAT(data) {
-    return this._packChunk(constants.TYPE_IDAT, data);
+  public packIDAT(data: Buffer) {
+    return this._packChunk(Depnog.PackType.IDAT, data);
   }
 
-  packIEND() {
-    return this._packChunk(constants.TYPE_IEND, null);
+  public packIEND() {
+    return this._packChunk(Depnog.PackType.IEND);
   }
 }

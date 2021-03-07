@@ -1,3 +1,4 @@
+import { Buffer } from "https://deno.land/std@0.89.0/node/buffer.ts";
 import { getImagePasses } from "./interlace.ts";
 import { predictPaeth } from "./paeth_predictor.ts";
 
@@ -134,7 +135,7 @@ export class Filter {
     if (filter === 0) {
       unfilteredLine = rawData.slice(1, byteWidth + 1);
     } else {
-      unfilteredLine = new Uint8Array(byteWidth);
+      unfilteredLine = new Buffer(byteWidth);
 
       switch (filter) {
         case 1:

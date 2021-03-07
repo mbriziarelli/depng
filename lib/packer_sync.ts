@@ -1,4 +1,5 @@
 import zlib from "zlib";
+import { Buffer } from "https://deno.land/std@0.89.0/node/buffer.ts";
 import { constants } from "./constants.ts";
 import { Packer } from "./packer.ts";
 
@@ -12,13 +13,11 @@ export function packSync(metaData, opt) {
   }
 
   const options = opt || {};
-
   const packer = new Packer(options);
-
-  const chunks: Uint8Array[] = [];
+  const chunks: Buffer[] = [];
 
   // Signature
-  chunks.push(new Uint8Array(constants.PNG_SIGNATURE));
+  chunks.push(new Buffer(constants.PNG_SIGNATURE));
 
   // Header
   chunks.push(packer.packIHDR(metaData.width, metaData.height));

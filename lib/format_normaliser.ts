@@ -1,3 +1,5 @@
+import { Buffer } from "https://deno.land/std@0.89.0/node/buffer.ts";
+
 function dePalette(indata, outdata, width: number, height: number, palette) {
   let pxPos = 0;
   // use values from palette
@@ -50,7 +52,7 @@ function replaceTransparentColor(
   }
 }
 
-function scaleDepth(indata, outdata, width, height, depth) {
+function scaleDepth(indata, outdata, width: number, height, depth) {
   const maxOutSample = 255;
   const maxInSample = Math.pow(2, depth) - 1;
   let pxPos = 0;
@@ -88,7 +90,7 @@ export function normalizeFormat(indata, imageData, skipRescale = false) {
     if (depth !== 8 && !skipRescale) {
       // if we need to change the buffer size
       if (depth === 16) {
-        outdata = new Uint8Array(width * height * 4);
+        outdata = new Buffer(width * height * 4);
       }
       scaleDepth(indata, outdata, width, height, depth);
     }

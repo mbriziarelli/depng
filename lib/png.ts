@@ -1,56 +1,21 @@
 import Stream from "stream";
+import { Buffer } from "https://deno.land/std@0.89.0/node/buffer.ts";
 import { ParserAsync as Parser } from "./parser_async.ts";
 import { PackerAsync as Packer } from "./packer_async.ts";
 import * as PNGSync from "./png_sync.ts";
-
-export type BitDepth = 8 | 16;
-
-export interface Color {
-  red?: number;
-  green?: number;
-  blue?: number;
-}
-
-export interface PNGOptions {
-  // use this with height if you want to create png from scratch (default: 0)
-  width?: number;
-  // use this with width if you want to create png from scratch (default: 0)
-  height?: number;
-  // whether parser should be strict about checksums in source stream (default: true)
-  checkCRC?: boolean;
-  // chunk size used for deflating data chunks, this should be power of 2 and must not be less than 256 and more than 32*1024 (default: 32 kB)
-  deflateChunkSize?: number;
-  // compression level for deflate (default: 9)
-  deflateLevel?: number;
-  // compression strategy for deflate (default: 3)
-  deflateStrategy: number;
-  // deflate stream factory (default: zlib.createDeflate)
-  deflateFactory?: any;
-  // png filtering method for scanlines (default: -1 => auto, accepts array of numbers 0-4)
-  filterType?: any;
-  // the output colorType - see constants. 0 = grayscale, no alpha, 2 = color, no alpha, 4 = grayscale & alpha, 6 = color & alpha. Default currently 6, but in the future may calculate best mode.
-  colorType?: any;
-  // the input colorType - see constants. Default is 6 (RGBA)
-  inputColorType?: number;
-  // the bitDepth of the output, 8 or 16 bits. Input data is expected to have this bit depth. 16 bit data is expected in the system endianness (Default: 8)
-  bitDepth?: BitDepth;
-  // whether the input bitmap has 4 bytes per pixel (rgb and alpha) or 3 (rgb - no alpha).
-  inputHasAlpha?: boolean;
-  // an object containing red, green, and blue values between 0 and 255 that is used when packing a PNG if alpha is not to be included (default: 255,255,255)
-  bgColor?: Color;
-}
+import { Depnog } from "./types.ts";
 
 export class PNG extends Stream {
   public width: number;
   public height: number;
-  public data: Uint8Array | null;
+  public data: Buffer | null;
   public gamma: number;
   public readable: boolean;
   public writable: boolean;
   private _parser: Parser;
   private _packer: Packer;
 
-  public constructor(options: PNGOptions) {
+  public constructor(options: Depnog.Options) {
     super();
 
     // coerce pixel dimensions to integers (also coerces undefined -> 0):
@@ -58,7 +23,7 @@ export class PNG extends Stream {
     this.height = (options.height ?? 0) | 0;
 
     this.data = this.width > 0 && this.height > 0
-      ? new Uint8Array(4 * this.width * this.height)
+      ? new Buffer(4 * this.width * this.height)
       : null;
 
     if (options.fill && this.data) {
@@ -77,7 +42,7 @@ export class PNG extends Stream {
     this._parser.on("gamma", this._gamma.bind(this));
     this._parser.on(
       "parsed",
-      (data: Uint8Array) => {
+      (data: Buffer) => {
         this.data = data;
         this.emit("parsed", data);
       },
@@ -98,7 +63,7 @@ export class PNG extends Stream {
       return this;
     }
 
-    process.nextTick(
+    queueMicrotask(
       () => {
         this._packer.pack(this.data, this.width, this.height, this.gamma);
       },
@@ -107,7 +72,7 @@ export class PNG extends Stream {
     return this;
   }
 
-  public parse(data, callback) {
+  public parse(data: Buffer, callback) {
     if (callback) {
       const onParsed = (parsedData) => {
         this.removeListener("error", onError);
@@ -127,15 +92,16 @@ export class PNG extends Stream {
     }
 
     this.end(data);
+
     return this;
   }
 
-  public write(data) {
+  public write(data: Buffer) {
     this._parser.write(data);
     return true;
   }
 
-  public end(data) {
+  public end(data: Buffer) {
     this._parser.end(data);
   }
 
@@ -146,7 +112,7 @@ export class PNG extends Stream {
     this.emit("metadata", metadata);
   }
 
-  private _gamma(gamma) {
+  private _gamma(gamma: number) {
     this.gamma = gamma;
   }
 
@@ -193,7 +159,7 @@ export class PNG extends Stream {
     }
 
     for (let y = 0; y < height; y++) {
-      src.data.copy(
+      src.data?.copy(
         dst.data,
         ((deltaY + y) * dst.width + deltaX) << 2,
         ((srcY + y) * src.width + srcX) << 2,

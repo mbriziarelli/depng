@@ -1,3 +1,4 @@
+import { Buffer } from "https://deno.land/std@0.89.0/node/buffer.ts";
 import { predictPaeth } from "./paeth_predictor.ts";
 
 function filterNone(
@@ -182,7 +183,7 @@ export function packFilter(
   const byteWidth = width * bpp;
   let rawPos = 0;
   let pxPos = 0;
-  const rawData = new Uint8Array((byteWidth + 1) * height);
+  const rawData = new Buffer((byteWidth + 1) * height);
 
   let sel = filterTypes[0];
 

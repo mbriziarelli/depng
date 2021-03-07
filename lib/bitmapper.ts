@@ -1,12 +1,18 @@
+import { Buffer } from "https://deno.land/std@0.89.0/node/buffer.ts";
 import { getImagePasses, getInterlaceIterator } from "./interlace.ts";
 
 const pixelBppMapper = [
   // 0 - dummy entry
-  function () {},
+  () => undefined,
 
   // 1 - L
   // 0: 0, 1: 0, 2: 0, 3: 0xff
-  function (pxData, data, pxPos, rawPos) {
+  (
+    pxData: Buffer,
+    data: Buffer,
+    pxPos: number,
+    rawPos: number,
+  ) => {
     if (rawPos === data.length) {
       throw new Error("Ran out of data");
     }
@@ -20,7 +26,12 @@ const pixelBppMapper = [
 
   // 2 - LA
   // 0: 0, 1: 0, 2: 0, 3: 1
-  function (pxData, data, pxPos, rawPos) {
+  (
+    pxData: Buffer,
+    data: Buffer,
+    pxPos: number,
+    rawPos: number,
+  ) => {
     if (rawPos + 1 >= data.length) {
       throw new Error("Ran out of data");
     }
@@ -34,7 +45,12 @@ const pixelBppMapper = [
 
   // 3 - RGB
   // 0: 0, 1: 1, 2: 2, 3: 0xff
-  function (pxData, data, pxPos, rawPos) {
+  (
+    pxData: Buffer,
+    data: Buffer,
+    pxPos: number,
+    rawPos: number,
+  ) => {
     if (rawPos + 2 >= data.length) {
       throw new Error("Ran out of data");
     }
@@ -47,7 +63,12 @@ const pixelBppMapper = [
 
   // 4 - RGBA
   // 0: 0, 1: 1, 2: 2, 3: 3
-  function (pxData, data, pxPos, rawPos) {
+  (
+    pxData: Buffer,
+    data: Buffer,
+    pxPos: number,
+    rawPos: number,
+  ) => {
     if (rawPos + 3 >= data.length) {
       throw new Error("Ran out of data");
     }
@@ -61,11 +82,16 @@ const pixelBppMapper = [
 
 const pixelBppCustomMapper = [
   // 0 - dummy entry
-  function () {},
+  () => undefined,
 
   // 1 - L
   // 0: 0, 1: 0, 2: 0, 3: 0xff
-  function (pxData, pixelData, pxPos, maxBit) {
+  (
+    pxData: Buffer,
+    pixelData: Buffer,
+    pxPos: number,
+    maxBit: number,
+  ) => {
     const pixel = pixelData[0];
     pxData[pxPos] = pixel;
     pxData[pxPos + 1] = pixel;
@@ -75,7 +101,7 @@ const pixelBppCustomMapper = [
 
   // 2 - LA
   // 0: 0, 1: 0, 2: 0, 3: 1
-  function (pxData, pixelData, pxPos) {
+  (pxData: Buffer, pixelData: Buffer, pxPos: number) => {
     const pixel = pixelData[0];
     pxData[pxPos] = pixel;
     pxData[pxPos + 1] = pixel;
@@ -85,7 +111,12 @@ const pixelBppCustomMapper = [
 
   // 3 - RGB
   // 0: 0, 1: 1, 2: 2, 3: 0xff
-  function (pxData, pixelData, pxPos, maxBit) {
+  (
+    pxData: Buffer,
+    pixelData: Buffer,
+    pxPos: number,
+    maxBit: number,
+  ) => {
     pxData[pxPos] = pixelData[0];
     pxData[pxPos + 1] = pixelData[1];
     pxData[pxPos + 2] = pixelData[2];
@@ -94,7 +125,7 @@ const pixelBppCustomMapper = [
 
   // 4 - RGBA
   // 0: 0, 1: 1, 2: 2, 3: 3
-  function (pxData, pixelData, pxPos) {
+  (pxData: Buffer, pixelData: Buffer, pxPos: number) => {
     pxData[pxPos] = pixelData[0];
     pxData[pxPos + 1] = pixelData[1];
     pxData[pxPos + 2] = pixelData[2];
@@ -102,8 +133,8 @@ const pixelBppCustomMapper = [
   },
 ];
 
-function bitRetriever(data, depth) {
-  const leftOver = [];
+function bitRetriever(data: Buffer, depth: number) {
+  let leftOver: number[] = [];
   let i = 0;
 
   function split() {
@@ -151,7 +182,7 @@ function bitRetriever(data, depth) {
   }
 
   return {
-    get: function (count) {
+    get: (count: number) => {
       while (leftOver.length < count) {
         split();
       }
@@ -159,10 +190,10 @@ function bitRetriever(data, depth) {
       leftOver = leftOver.slice(count);
       return returner;
     },
-    resetAfterLine: function () {
+    resetAfterLine: () => {
       leftOver.length = 0;
     },
-    end: function () {
+    end: () => {
       if (i !== data.length) {
         throw new Error("extra data found");
       }
@@ -170,7 +201,14 @@ function bitRetriever(data, depth) {
   };
 }
 
-function mapImage8Bit(image, pxData, getPxPos, bpp, data, rawPos) {
+function mapImage8Bit(
+  image,
+  pxData: Buffer,
+  getPxPos,
+  bpp: number,
+  data: Buffer,
+  rawPos: number,
+) {
   const imageWidth = image.width;
   const imageHeight = image.height;
   const imagePass = image.index;
@@ -184,7 +222,14 @@ function mapImage8Bit(image, pxData, getPxPos, bpp, data, rawPos) {
   return rawPos;
 }
 
-function mapImageCustomBit(image, pxData, getPxPos, bpp, bits, maxBit) {
+function mapImageCustomBit(
+  image,
+  pxData: Buffer,
+  getPxPos,
+  bpp: number,
+  bits,
+  maxBit: number,
+) {
   const imageWidth = image.width;
   const imageHeight = image.height;
   const imagePass = image.index;
@@ -198,7 +243,7 @@ function mapImageCustomBit(image, pxData, getPxPos, bpp, bits, maxBit) {
   }
 }
 
-export function dataToBitMap(data, bitmapInfo) {
+export function dataToBitMap(data: Buffer, bitmapInfo) {
   const width = bitmapInfo.width;
   const height = bitmapInfo.height;
   const depth = bitmapInfo.depth;
@@ -211,7 +256,7 @@ export function dataToBitMap(data, bitmapInfo) {
   }
   let pxData;
   if (depth <= 8) {
-    pxData = new Uint8Array(width * height * 4);
+    pxData = new Buffer(width * height * 4);
   } else {
     pxData = new Uint16Array(width * height * 4);
   }
@@ -225,12 +270,12 @@ export function dataToBitMap(data, bitmapInfo) {
     getPxPos = getInterlaceIterator(width);
   } else {
     let nonInterlacedPxPos = 0;
-    getPxPos = function () {
+    getPxPos = () => {
       const returner = nonInterlacedPxPos;
       nonInterlacedPxPos += 4;
       return returner;
     };
-    images = [{ width: width, height: height }];
+    images = [{ width, height }];
   }
 
   for (let imageIndex = 0; imageIndex < images.length; imageIndex++) {

@@ -1,3 +1,4 @@
+import { Buffer } from "https://deno.land/std@0.89.0/node/buffer.ts";
 import { inflateSync } from "./sync_inflate.ts";
 import { SyncReader } from "./sync_reader.ts";
 import { process } from "./filter_parse_sync.ts";
@@ -45,8 +46,8 @@ export function parseSync(buffer, options) {
     gamma = _gamma_;
   }
 
-  const inflateDataList: Uint8Array[] = [];
-  function handleInflateData(inflatedData: Uint8Array) {
+  const inflateDataList: Buffer[] = [];
+  function handleInflateData(inflatedData: Buffer) {
     inflateDataList.push(inflatedData);
   }
 

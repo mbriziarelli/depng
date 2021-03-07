@@ -1,14 +1,15 @@
+import { Buffer } from "https://deno.land/std@0.89.0/node/buffer.ts";
 import Stream from "stream";
 
 export class ChunkStream extends Stream {
-  private _buffers: (Uint8Array | null)[] | null;
+  private _buffers: (Buffer | null)[] | null;
   private _buffered: number;
   private _reads: any[] | null;
   private _paused: boolean;
   private _encoding: string;
   private _writable: boolean;
 
-  constructor() {
+  public constructor() {
     super();
 
     this._buffers = [];
@@ -21,14 +22,14 @@ export class ChunkStream extends Stream {
     this._writable = true;
   }
 
-  read(length: number, callback) {
+  public read(length: number, callback) {
     this._reads.push({
       length: Math.abs(length), // if length < 0 then at most this length
       allowLess: length < 0,
       func: callback,
     });
 
-    process.nextTick(
+    queueMicrotask(
       () => {
         this._process();
 
@@ -42,14 +43,14 @@ export class ChunkStream extends Stream {
     );
   }
 
-  write(data, encoding) {
+  public write(data: Buffer, encoding) {
     if (!this._writable) {
       this.emit("error", new Error("Stream not writable"));
       return false;
     }
 
     let dataBuffer;
-    if (data instanceof Uint8Array) {
+    if (data instanceof Buffer) {
       dataBuffer = data;
     } else {
       dataBuffer = Buffer.from(data, encoding || this._encoding);
@@ -68,7 +69,7 @@ export class ChunkStream extends Stream {
     return this._writable && !this._paused;
   }
 
-  end(data, encoding) {
+  public end(data, encoding) {
     if (data) {
       this.write(data, encoding);
     }
@@ -88,7 +89,8 @@ export class ChunkStream extends Stream {
       this._process();
     }
   }
-  destroySoon(data, encoding) {
+
+  public destroySoon(data, encoding) {
     return this.end(data, encoding);
   }
 
@@ -100,7 +102,7 @@ export class ChunkStream extends Stream {
     this.destroy();
   }
 
-  destroy() {
+  public destroy() {
     if (!this._buffers) {
       return;
     }
@@ -120,7 +122,7 @@ export class ChunkStream extends Stream {
     const smallerBuf = this._buffers[0];
 
     // ok there is more data than we need
-    if (smallerBuf.length > read.length) {
+    if (smallerBuf && smallerBuf.length > read.length) {
       this._buffered -= read.length;
       this._buffers[0] = smallerBuf.slice(read.length);
 
@@ -139,7 +141,7 @@ export class ChunkStream extends Stream {
 
     let pos = 0;
     let count = 0;
-    const data = new Uint8Array(read.length);
+    const data = new Buffer(read.length);
 
     // create buffer for all data
     while (pos < read.length) {

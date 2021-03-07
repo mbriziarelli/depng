@@ -1,6 +1,12 @@
+import { Buffer } from "https://deno.land/std@0.89.0/node/buffer.ts";
 import { constants } from "./constants.ts";
 
-export function packBits(dataIn, width, height, options) {
+export function packBits(
+  dataIn: Buffer,
+  width: number,
+  height: number,
+  options,
+) {
   const outHasAlpha =
     [constants.COLORTYPE_COLOR_ALPHA, constants.COLORTYPE_ALPHA].indexOf(
       options.colorType,
@@ -33,7 +39,7 @@ export function packBits(dataIn, width, height, options) {
     maxValue = 65535;
     outBpp *= 2;
   }
-  const outData = new Uint8Array(width * height * outBpp);
+  const outData = new Buffer(width * height * outBpp);
 
   let inIndex = 0;
   let outIndex = 0;
@@ -107,7 +113,7 @@ export function packBits(dataIn, width, height, options) {
 
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      const rgba = getRGBA(data, inIndex);
+      const rgba = getRGBA();
 
       switch (options.colorType) {
         case constants.COLORTYPE_COLOR_ALPHA:

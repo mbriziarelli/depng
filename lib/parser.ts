@@ -1,12 +1,14 @@
 import { constants } from "./constants.ts";
 import { CrcCalculator } from "./crc.ts";
+import { Depnog } from "./types.ts";
 
 export class Parser {
+  private _options: Depnog.Options;
   private _hasIHDR: boolean;
   private _hasIEND: boolean;
   private _emittedHeadersFinished: boolean;
 
-  public constructor(options, dependencies) {
+  public constructor(options: Depnog.Options, dependencies) {
     this._options = options;
     options.checkCRC = options.checkCRC !== false;
 
@@ -205,6 +207,7 @@ export class Parser {
     this.simpleTransparency();
     this.read(length, this._parseTRNS.bind(this));
   }
+
   private _parseTRNS(data) {
     this._crc.write(data);
 
@@ -258,6 +261,7 @@ export class Parser {
     }
     this.read(-length, this._parseIDAT.bind(this, length));
   }
+
   private _parseIDAT(length, data) {
     this._crc.write(data);
 
@@ -281,6 +285,7 @@ export class Parser {
   private _handleIEND(length) {
     this.read(length, this._parseIEND.bind(this));
   }
+
   private _parseIEND(data) {
     this._crc.write(data);
 
