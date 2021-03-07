@@ -1,5 +1,5 @@
 import { Buffer } from "https://deno.land/std@0.89.0/node/buffer.ts";
-import Stream from "stream";
+import { Stream } from "https://deno.land/std@0.89.0/node/stream.ts";
 
 export class ChunkStream extends Stream {
   private _buffers: (Buffer | null)[] | null;

@@ -1,5 +1,5 @@
-import Stream from "stream";
 import { Buffer } from "https://deno.land/std@0.89.0/node/buffer.ts";
+import { Stream } from "https://deno.land/std@0.89.0/node/stream.ts";
 import { constants } from "./constants.ts";
 import { Packer } from "./packer.ts";
 

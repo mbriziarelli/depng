@@ -4,9 +4,14 @@ import { FilterAsync } from "./filter_parse_async.ts";
 import { Parser } from "./parser.ts";
 import { dataToBitMap } from "./bitmapper.ts";
 import { normalizeFormat } from "./format_normaliser.ts";
+import { Depnog } from "./types.ts";
 
 export class ParserAsync extends ChunkStream {
-  constructor(options) {
+  private _parser: Parser;
+  private _options: Depnog.Options;
+  public writable: boolean;
+
+  constructor(options: Depnog.Options) {
     super();
 
     this._parser = new Parser(options, {

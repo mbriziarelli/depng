@@ -1,5 +1,5 @@
-import Stream from "stream";
 import { Buffer } from "https://deno.land/std@0.89.0/node/buffer.ts";
+import { Stream } from "https://deno.land/std@0.89.0/node/stream.ts";
 import { ParserAsync as Parser } from "./parser_async.ts";
 import { PackerAsync as Packer } from "./packer_async.ts";
 import * as PNGSync from "./png_sync.ts";
